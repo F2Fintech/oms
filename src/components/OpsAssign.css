@@ -1,0 +1,125 @@
+.opsassignpage {
+    color: rgb(26, 2, 2);
+    font-weight: 700;
+    font-weight: bold;
+    margin-top: 13px;
+}
+
+h1 {
+     padding-top:15px;
+     
+   }
+
+.delete-btn {
+     background-color: linear-gradient(92.83deg, rgb(255, 116, 38) 0%, rgb(249, 58, 19) 100%);
+  border-radius: 100px;
+  box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+  color: black;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 18px;
+  font-weight:bold;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-left:7px;
+}
+
+.delete-btn:hover {
+    background-color: brown;
+    color: white;
+}
+
+.send-email-btn {
+    background-color: rgb(142, 53, 194);
+    color: white;
+    width: 80px;
+    padding: 6px;
+    border: none;
+    font-size: 12px;
+}
+
+.send-email-btn:hover {
+    background-color: brown;
+    color: white;
+}
+
+.downloadfile {
+    background-color: linear-gradient(92.83deg, rgb(255, 116, 38) 0%, rgb(249, 58, 19) 100%);
+  border-radius: 100px;
+  box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+  color: black;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 18px;
+  font-weight:bold;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-left:7px;
+}
+
+.downloadfile:hover {
+    background-color: brown;
+    color:white;
+}
+
+.t-body td,.t-body th {
+    white-space: nowrap;
+    /* Prevent content from wrapping */
+    overflow: hidden;
+    /* Hide any content that overflows the cell */
+    text-overflow: ellipsis;
+    /* Show an ellipsis (...) when content overflows */
+}
+
+.t-head1 {
+    background-color: black;
+    color: white;
+}
+
+/* .t-body td {
+  border: 1px solid #100a04;
+  
+} */
+
+/* Green for DISBURSED */
+.green-row {
+    background-color: green;
+}
+
+/* Red for REJECTED */
+.red-row {
+    background-color: #db3c30;
+    /* Light red */
+}
+
+/* Pink for HOLD */
+.pink-row {
+    background-color: pink;
+    /* Pink */
+}
+
+/* Yellow for APPROVED */
+.yellow-row {
+    background-color: yellow;
+    /* Light yellow */
+}
+
+/* Purple for DROP */
+.purple-row {
+    background-color: purple;
+    /* Purple */
+}

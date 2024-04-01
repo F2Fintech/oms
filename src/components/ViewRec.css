@@ -1,0 +1,48 @@
+
+
+.table-container1 {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    font-size: x-large;
+    
+    border: 1px solid #100a04;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    overflow: hidden;
+    /* Hide overflowing content */
+    text-overflow: ellipsis;
+    /* Display ellipsis for overflowed text */
+}
+
+th {
+    background-color: #265728;
+   
+    
+}
+
+
+   
+
+.audio-player {
+    display: block;
+    margin-top: 5px;
+
+}
+
+.audio-player audio {
+    width: 100%;
+}

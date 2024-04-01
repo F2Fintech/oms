@@ -1,0 +1,49 @@
+.upload-form-container {
+
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.upload-form-container input[type="text"],
+.upload-form-container input[type="file"],
+.upload-form-container button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.upload-form-container button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.upload-form-container button:hover {
+    background-color: #0056b3;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+select {
+    padding: 10px;
+    margin-bottom: 8px;
+}

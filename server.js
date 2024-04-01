@@ -1,0 +1,1169 @@
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const cors = require('cors');
+const archiver = require('archiver');
+const path = require('path');
+const fs = require('fs');
+const status = require('express-status-monitor');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Audio = require('./models/uploadrecording');
+const OpsRec = require('./models/OpsRecording');
+const SalesAudio = require('./models/SalesRecording');
+
+
+
+
+const app = express();
+const PORT = 5000
+app.use(status());
+// Middleware to set no-cache headers for all routes
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/uploads', express.static('uploads'));
+
+const recordingUpload = multer();
+
+
+// Database connection (MongoDB)
+mongoose.connect("mongodb://localhost:27017/april24-oms")
+.then((e) => console.log("Mongodb connected"));
+
+
+
+// Handle file uploads for both Audio and OpsAudio models
+app.post('/rec', recordingUpload.single('audio'), async (req, res) => {
+    try {
+      const { leadId, empName, customerPan, type } = req.body;
+     
+       // Check if the customer PAN exists in the database
+        const customerExists = await Data.findOne({ customerPan });
+
+        if (!customerExists) {
+            return res.status(400).json({ message: 'Customer PAN does not exist' });
+        }
+      
+      // Determine the Content-Type based on the file extension
+        const fileExtension = req.file.originalname.split('.').pop().toLowerCase(); // Extract file extension
+        let contentType = '';
+        switch (fileExtension) {
+    case 'aac':
+        contentType = 'audio/aac';
+        break;
+    case 'wav':
+        contentType = 'audio/wav';
+        break;
+    case 'mp3':
+        contentType = 'audio/mpeg';
+        break;
+    case 'm4a':
+        contentType = 'audio/mp4';
+        break;
+    case 'flac':
+        contentType = 'audio/flac';
+        break;
+    case 'ogg':
+        contentType = 'audio/ogg';
+        break;
+    case 'aif':
+    case 'aiff':
+        contentType = 'audio/aiff';
+        break;
+    case 'wma':
+        contentType = 'audio/x-ms-wma';
+        break;
+    // Add more cases for other audio file types if needed
+    default:
+        contentType = 'application/octet-stream'; // Default to binary data
+        break;
+}
+
+
+        if (type === 'ops') {
+            // Handle OpsAudio recording upload
+          const opsAudio = new OpsRec({
+                leadId: leadId,
+                 empName: empName,
+                
+                customerPan: customerPan,
+                name: req.file.originalname,
+                audio: req.file.buffer,
+                contentType: contentType
+            });
+
+            await opsAudio.save();
+          res.send('Ops recording uploaded successfully!');
+          
+        } else if (type === 'sales') {
+          // Handle SalesAudio recording upload
+          const salesAudio = new SalesAudio({
+            leadId: leadId,
+            empName: empName,
+            customerPan: customerPan,
+            name: req.file.originalname,
+            audio: req.file.buffer,
+            contentType: contentType
+          });
+
+          await salesAudio.save();
+          res.send('Sales recording uploaded successfully!');
+        }
+        else {
+            // Handle Audio recording upload
+            const audio = new Audio({
+              leadId: leadId,
+              empName: empName,
+              customerPan: customerPan,
+                name: req.file.originalname,
+                audio: req.file.buffer,
+                contentType: contentType
+            });
+
+            await audio.save();
+            res.send('Audio uploaded successfully!');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error uploading audio');
+    }
+});
+
+
+app.get('/audio', async (req, res) => {
+    try {
+        const audio = await Audio.find();
+        res.json(audio);
+    } catch (error) {
+        console.error('Error fetching audio:', error);
+        res.status(500).json({ error: 'Error fetching audio' });
+    }
+});
+
+
+
+app.get('/opsaudio', async (req, res) => {
+    try {
+        const opsAudio = await OpsRec.find();
+        res.json(opsAudio);
+    } catch (error) {
+        console.error('Error fetching ops audio:', error);
+        res.status(500).json({ error: 'Error fetching ops audio' });
+    }
+});
+
+app.get('/salesaudio', async (req, res) => {
+    try {
+        const salesAudio = await SalesAudio.find();
+        res.json(salesAudio);
+    } catch (error) {
+        console.error('Error fetching sales audio:', error);
+        res.status(500).json({ error: 'Error fetching sales audio' });
+    }
+});
+
+// Route to fetch data
+app.get('/data', async (req, res) => {
+    try {
+        
+        const data = await Data.find();
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: 'Error fetching data' });
+    }
+});
+
+// Serve audio files
+app.get('/audio/:id', async (req, res) => {
+    try {
+        const audio = await Audio.findById(req.params.id);
+
+        if (!audio) {
+            return res.status(404).send('Audio not found');
+        }
+
+        res.set('Content-Type', audio.contentType);
+        res.send(audio.audio);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching audio');
+    }
+});
+
+// Serve audio files for OpsRec
+app.get('/opsrec/audio/:id', async (req, res) => {
+    try {
+        const opsRec = await OpsRec.findById(req.params.id);
+
+        if (!opsRec || !opsRec.audio) {
+            return res.status(404).send('OpsRec audio not found');
+        }
+
+        res.set('Content-Type', opsRec.contentType);
+        res.send(opsRec.audio);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching OpsRec audio');
+    }
+});
+
+// Serve audio files for OpsRec
+app.get('/sales/audio/:id', async (req, res) => {
+    try {
+        const salesRec = await SalesAudio.findById(req.params.id);
+
+        if (!salesRec || !salesRec.audio) {
+            return res.status(404).send('OpsRec audio not found');
+      }
+      
+      res.set('Content-Disposition', 'inline');
+        res.set('Content-Type', salesRec.contentType);
+        res.send(salesRec.audio);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching Sales audio');
+    }
+});
+
+
+// register and login
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    email: String,
+    password: String,
+    role: String
+  });
+  const User = mongoose.model('User', userSchema);
+
+  // Middleware to authenticate token
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+  }
+  
+  // Register User
+  // Register User
+    app.post('/reg', async (req, res) => {
+    try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const newUser = new User({ username: req.body.username, email: req.body.email, password: hashedPassword });
+    await newUser.save();
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error registering new user' });
+    }
+  });
+
+  
+  // Login User
+  app.post('/login', async (req, res) => {
+    try {
+      const user = await User.findOne({ username: req.body.username });
+      if (user && await bcrypt.compare(req.body.password, user.password)) {
+        const accessToken = jwt.sign({ username: user.username}, 'fintechfinancialfintechfinancialf2');
+        res.json({ accessToken: accessToken});
+      } else {
+        res.status(400).send('Username or password is incorrect');
+      }
+    } catch {
+      res.status(500).send('Error logging in user');
+    }
+  });
+  // Protected route example
+app.get('/protected', authenticateToken, (req, res) => {
+    res.json({ message: "Protected data", user: req.user });
+  });
+
+// Mongoose Schema and Model for Data
+const dataSchema = new mongoose.Schema({
+  
+    dateOfLogin: {
+        type: String, // Store as a string
+    },
+    employeeIdOfCaseOwner: String,
+    adharCard: String,
+    employeeName: String,
+    dateOfBirth: {
+        type: String, // Store as a string
+        set: (v) => {
+            // Convert to 'DD-MM-YYYY' format
+            const date = new Date(v);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+    },
+    managerName: String,
+    employementType: String,
+    branchName: String,
+    customerName: String,
+    customerContact: String,
+    mailId: String,
+    customerPan: {
+        type: String,
+        required: true,
+        minlength: 10,  // Minimum length of Aadhaar number
+        maxlength: 10,  // Maximum length of Aadhaar number
+        match: /^[0-9a-zA-Z]+$/,  // Regex to allow only alphanumeric characters (both digits and letters)
+      },
+    motherName: String,
+    nominee: String,
+    customerPermanentAddress: String,
+    customerCurrentAdd: String,
+    officeAddressWithPin: String,
+    pinCode: String,
+    state: String,
+    city: String,
+    customerOccupation: String,
+    requiredLoanType: String,
+    requiredLoanAmount: Number,
+    latestCIBILScore: String,
+    bankingPassAndOtherDocPass: String,
+    toBeLoggedInFromWhichLender: String,
+    remarks: String,
+    files:[String]
+});
+
+
+
+// ops teams schema
+
+const opsTeamSchema = new mongoose.Schema({
+  pocName: String,
+  customerPan: String,
+  docCheckStatus: String,
+  docCheckBy: String,
+  tvrStatus: String,
+  tvrDoneBy: String,
+  eligibilityCheckStatus: String,
+  eligibilityCheckBy: String,
+  loginStatus: String,
+  loginDoneBy: String,
+  loginDate: String,
+  leadId: String,
+  caseStatus: String,
+  kfs: String,
+  lastUpdateDate: String,
+  appovalDate: String,
+  disbursalDate: String,
+  opsRemarks: String,
+  casePendingFrom: String,
+  bankerName: String,
+  bankerNo: String,
+  bankerMail: String,
+  cashBackAmount: String,
+  finalApproval: String,
+  finalDisbAmnt: String,
+  highDegree:String,
+  regYear:String,
+  totalActiveLoanCountAmount:String,
+  creditCardStatus:String,
+  bounIn6Month:String,
+  enquariesIn6Month:String,
+  totalSal:String,
+  totalExtraIncome:String,
+  totalCalculatedSal: String,
+  elgibilityType: String,
+  creditSuggLender: String,
+  creditRemarks: String
+})
+
+// Nisha Schema
+const nishaDataSchema = new mongoose.Schema({
+  dateOfLogin: {
+    type: String, // Store as a string
+},
+employeeIdOfCaseOwner: String,
+adharCard: String,
+employeeName: String,
+dateOfBirth: {
+    type: String, // Store as a string
+    set: (v) => {
+        // Convert to 'DD-MM-YYYY' format
+        const date = new Date(v);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+},
+managerName: String,
+employementType: String,
+branchName: String,
+customerName: String,
+customerContact: String,
+mailId: String,
+customerPan: {
+    type: String,
+    // required: true,
+    minlength: 10,  // Minimum length of Aadhaar number
+    maxlength: 10,  // Maximum length of Aadhaar number
+    match: /^[0-9a-zA-Z]+$/,  // Regex to allow only alphanumeric characters (both digits and letters)
+  },
+customerPermanentAddress: String,
+customerCurrentAdd: String,
+officeAddressWithPin: String,
+pinCode: String,
+state: String,
+city: String,
+customerOccupation: String,
+requiredLoanType: String,
+requiredLoanAmount: Number,
+latestCIBILScore: String,
+bankingPassAndOtherDocPass: String,
+toBeLoggedInFromWhichLender: String,
+remarks: String,
+files:[String],
+
+})
+
+const nishaOpsDataSchema = new mongoose.Schema({
+  pocName: String,
+  docCheckStatus: String,
+  docCheckBy: String,
+  tvrStatus: String,
+  tvrDoneBy: String,
+  eligibilityCheckStatus: String,
+  eligibilityCheckBy: String,
+  loginStatus: String,
+  loginDoneBy: String,
+  loginDate: String,
+  leadId: String,
+  caseStatus: String,
+  appovalDate: String,
+  disbursalDate: String,
+  opsRemarks: String,
+  casePendingFrom: String,
+  bankerName: String,
+  bankerNo: Number,
+  bankerMail: String,
+  cashBackAmount: String,
+  highDegree:String,
+  regYear:String,
+  totalActiveLoanCountAmount:String,
+  creditCardStatus:String,
+  bounIn6Month:String,
+  enquariesIn6Month:String,
+  totalSal:String,
+  totalExtraIncome:String
+})
+
+
+// its give update date and time
+dataSchema.pre('save', function(next) {
+    const now = new Date();
+    this.dateOfLogin = formatDate(now);
+    next();
+});
+
+// for ops form 
+opsTeamSchema.pre('save', function(next) {
+  const now = new Date();
+  this.loginDate = formatDate(now);
+ 
+  next();
+});
+
+
+
+// Function to format the date
+function formatDate(date) {
+    // Format the date to 'YYYY-MM-DD HH:mm:ss'
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+const Data = mongoose.model('Data', dataSchema);
+const OpsData = mongoose.model('OpsData',opsTeamSchema);
+const NishaData = mongoose.model('NishaData',nishaDataSchema);
+const NishaOpsData = mongoose.model('NishaOpsData',nishaOpsDataSchema);
+// model  for furkan
+const FurkanData = mongoose.model('FurkanData',nishaDataSchema);
+const FurkanOpsData = mongoose.model('FurkanOpsData',nishaOpsDataSchema);
+
+// model for anit
+const AnitData = mongoose.model('AnitData',nishaDataSchema);
+const AnitOpsData = mongoose.model('AnitOpsData',nishaOpsDataSchema);
+
+// model for anurandhan
+const AnurandhanData = mongoose.model('AnurandhanData',nishaDataSchema);
+const AnurandhanOpsData = mongoose.model('AnurandhanOpsData',nishaOpsDataSchema);
+
+// model for manoj
+const ManojData = mongoose.model('ManojData',nishaDataSchema);
+const ManojOpsData = mongoose.model('ManojOpsData',nishaOpsDataSchema);
+
+// credit team muskan
+const MuskanData = mongoose.model("MuskanData",nishaDataSchema);
+const MuskanOpsData = mongoose.model("MuskanOpsData",nishaOpsDataSchema);
+
+// credit team aaditi
+const AaditiData = mongoose.model("AaditiData",nishaDataSchema);
+const AaditiOpsData = mongoose.model("AaditiOpsData",nishaOpsDataSchema);
+
+
+
+
+
+
+
+// Multer for file upload
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
+
+
+
+// Route to upload Nisha's data
+app.post('/opsassign/nisha', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+    // console.log(item);
+    // console.log(opsData);
+    const newNishaOpsData = new NishaOpsData(opsData);
+      await newNishaOpsData.save();
+      const newNishaData = new NishaData(item);
+      await newNishaData.save();
+      
+      res.status(200).json({ message: 'Data assigned to Nisha successfully' });
+  } catch (error) {
+      console.error('Error assigning data to Nisha', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload furkan data
+app.post('/opsassign/furkan', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+    console.log(item);
+    console.log(opsData);
+    const newFurkanOpsData = new FurkanOpsData(opsData);
+      await newFurkanOpsData.save();
+      const newFurkanData = new FurkanData(item);
+      await newFurkanData.save();
+      
+      res.status(200).json({ message: 'Data assigned to furkan  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to Furkan', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload anit data
+app.post('/opsassign/anit', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+    console.log(item);
+    console.log(opsData);
+    const newAnitOpsData = new AnitOpsData(opsData);
+      await newAnitOpsData.save();
+      const newAnitData = new AnitData(item);
+      await newAnitData.save();
+      
+      res.status(200).json({ message: 'Data assigned to anir  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to Anit', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload anurandhan data
+app.post('/opsassign/anurandhan', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+      console.log(item);
+      console.log(opsData);
+      const newAnurandhanOpsData = new AnurandhanOpsData(opsData);
+       await newAnurandhanOpsData.save();
+      const newAnurandhanData = new AnurandhanData(item);
+      await newAnurandhanData.save();
+      
+      res.status(200).json({ message: 'Data assigned to anurandhan  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to anurandhan', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload Manoj data
+app.post('/opsassign/manoj', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+      console.log(item);
+      console.log(opsData);
+      const newManojOpsData = new ManojOpsData(opsData);
+       await newManojOpsData.save();
+      const newManojData = new ManojData(item);
+      await newManojData.save();
+      
+      res.status(200).json({ message: 'Data assigned to manoj  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to manoj', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload Muskan data
+app.post('/opsassign/muskan', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+      console.log(item);
+      console.log(opsData);
+      const newMuskanOpsData = new MuskanOpsData(opsData);
+       await newMuskanOpsData.save();
+      const newMuskanData = new MuskanData(item);
+      await newMuskanData.save();
+      
+      res.status(200).json({ message: 'Data assigned to muskan  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to muskan', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Route to upload Aaditi data
+app.post('/opsassign/aaditi', async (req, res) => {
+  try {
+    const { item,opsData } = req.body;
+      console.log(item);
+      console.log(opsData);
+      const newAaditiOpsData = new AaditiOpsData(opsData);
+       await newAaditiOpsData.save();
+      const newAaditiData = new AaditiData(item);
+      await newAaditiData.save();
+      
+      res.status(200).json({ message: 'Data assigned to aaditi  successfully' });
+  } catch (error) {
+      console.error('Error assigning data to aaditi', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+// Route to upload data and files
+app.post('/upload', upload.array('files'), async (req, res) => {
+    const {dateOfLogin,employeeIdOfCaseOwner, employeeName,adharCard,dateOfBirth, managerName,employementType,branchName,customerName,customerContact,mailId,customerPan,customerDateOfBirth,motherName,nominee,customerPermanentAddress,customerCurrentAdd,
+        officeAddressWithPin,pinCode,state,city,customerOccupation,requiredLoanAmount,requiredLoanType,latestCIBILScore,bankingPassAndOtherDocPass,toBeLoggedInFromWhichLender,remarks} = req.body;
+    const files = req.files.map(file => file.filename);
+
+    const newData = new Data({
+        dateOfLogin,
+        employeeIdOfCaseOwner,
+        adharCard,
+        employeeName,
+        dateOfBirth,
+        managerName,
+        employementType,
+        branchName,
+        customerName,
+        customerContact,
+        mailId,
+        customerPan,
+        customerDateOfBirth,
+        motherName,
+        nominee,
+        customerPermanentAddress,
+        customerCurrentAdd,
+        officeAddressWithPin,
+        pinCode,
+        state,
+        city,
+        customerOccupation,
+        requiredLoanType,
+        requiredLoanAmount,
+        latestCIBILScore,
+        bankingPassAndOtherDocPass,
+        toBeLoggedInFromWhichLender,
+        remarks,
+        files
+    });
+
+    try {
+        await newData.save();
+        console.log(newData);
+        res.status(201).json({ message: 'Data and files uploaded successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error uploading data and files' });
+    }
+});
+
+
+// Route to upload Ops Team data
+app.post('/upload-ops', async (req, res) => {
+  const{pocName,customerPan,docCheckStatus,docCheckBy,tvrStatus,tvrDoneBy,eligibilityCheckStatus,eligibilityCheckBy,loginStatus,loginDoneBy,loginDate,leadId,caseStatus,kfs,lastUpdateDate,appovalDate,disbursalDate,opsRemarks,casePendingFrom,bankerName,bankerNo,bankerMail,cashBackAmount,finalApproval,finalDisbAmnt,highDegree,regYear,totalActiveLoanCountAmount,creditCardStatus,bounIn6Month,enquariesIn6Month,totalSal,totalExtraIncome,totalCalculatedSal,elgibilityType,creditSuggLender,creditRemarks} = req.body;
+const opData = new OpsData({
+  pocName,
+  customerPan,
+  docCheckStatus,
+  docCheckBy,
+  tvrStatus,
+  tvrDoneBy,
+  eligibilityCheckStatus,
+  eligibilityCheckBy,
+  loginStatus,
+  loginDoneBy,
+  loginDate,
+  leadId,
+  caseStatus,
+  kfs,
+  lastUpdateDate,
+  appovalDate,
+  disbursalDate,
+  opsRemarks,
+  casePendingFrom,
+  bankerName,
+  bankerNo,
+  bankerMail,
+  cashBackAmount,
+  finalApproval,
+  finalDisbAmnt,
+  highDegree,
+  regYear,
+  totalActiveLoanCountAmount,
+  creditCardStatus,
+  bounIn6Month,
+  enquariesIn6Month,
+  totalSal,
+  totalExtraIncome,
+  totalCalculatedSal,
+  elgibilityType,
+  creditSuggLender,
+  creditRemarks
+});
+
+  try {
+    await opData.save();
+    console.log(opData);
+    res.status(201).json({ message: 'Ops Team data uploaded successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error uploading Ops Team data' });
+  }
+});
+
+app.post('/update-opsdata', async (req, res) => {
+  try {
+    const { _id, ...updatedOpsData } = req.body;
+
+    const existingOpsData = await OpsData.findByIdAndUpdate(_id, updatedOpsData, { new: true });
+
+    if (!existingOpsData) {
+      return res.status(404).json({ error: 'Ops Team data not found' });
+    }
+
+    res.status(200).json({ message: 'Ops Team data updated successfully' });
+  } catch (error) {
+    console.error('Error updating Ops Team data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to update data
+app.post('/update-data', async (req, res) => {
+  try {
+    const { _id, ...updatedData } = req.body;
+    const result = await Data.findByIdAndUpdate(_id, updatedData, { new: true });
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating data:', error);
+    res.status(500).json({ error: 'Error updating data' });
+  }
+});
+
+
+//Route to fetch data
+app.get('/data', async (req, res) => {
+    try {
+        const data = await Data.find(); 
+        res.send(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching data' });
+    }
+});
+
+//Route to fetch ops data
+app.get('/opsdata', async (req, res) => {
+  try {
+      const opsData = await OpsData.find(); 
+      res.send(opsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+
+// Route to fetch nisha data
+app.get('/nishadata', async (req, res) => {
+  try {
+      const nishaData = await NishaData.find(); 
+      res.send(nishaData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch nishaops data
+app.get('/nishaopsdata', async (req, res) => {
+  try {
+      const nishaOpsData = await NishaOpsData.find(); 
+      res.send(nishaOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch furkan data
+app.get('/furkandata', async (req, res) => {
+  try {
+      const furkanData = await FurkanData.find(); 
+      res.send(furkanData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch furkan ops data
+app.get('/furkanopsdata', async (req, res) => {
+  try {
+      const furkanOpsData = await FurkanOpsData.find(); 
+      res.send(furkanOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch anit data
+app.get('/anitdata', async (req, res) => {
+  try {
+      const anitData = await AnitData.find(); 
+      res.send(anitData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch anit ops data
+app.get('/anitopsdata', async (req, res) => {
+  try {
+      const anitOpsData = await AnitOpsData.find(); 
+      res.send(anitOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch anurandhan data
+app.get('/anurandhandata', async (req, res) => {
+  try {
+      const anurandhanData = await AnurandhanData.find(); 
+      res.send(anurandhanData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch anurandhan ops data
+app.get('/anurandhanopsdata', async (req, res) => {
+  try {
+      const anurandhanOpsData = await AnurandhanOpsData.find(); 
+      res.send(anurandhanOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+
+// Route to fetch manoj data
+app.get('/manojdata', async (req, res) => {
+  try {
+      const manojData = await ManojData.find(); 
+      res.send(manojData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route to fetch manoj ops data
+app.get('/manojopsdata', async (req, res) => {
+  try {
+      const manojOpsData = await ManojOpsData.find(); 
+      res.send(manojOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+
+// Route for fetch muskan data
+app.get('/muskandata', async (req, res) => {
+  try {
+      const muskanData = await MuskanData.find(); 
+      res.send(muskanData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route for fetch muskan ops data
+app.get('/muskanopsdata', async (req, res) => {
+  try {
+      const muskanOpsData = await MuskanOpsData.find(); 
+      res.send(muskanOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+
+// Route for fetch aaditi data
+app.get('/aaditidata', async (req, res) => {
+  try {
+      const aaditiData = await AaditiData.find(); 
+      res.send(aaditiData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Route for fetch muskan ops data
+app.get('/aaditiopsdata', async (req, res) => {
+  try {
+      const aaditiOpsData = await AaditiOpsData.find(); 
+      res.send(aaditiOpsData);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+
+
+// Define your routes for deleting nishaData and nishaOpsData
+app.delete('/nishadata/:id', async (req, res) => {
+  try {
+      await NishaData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting NishaData:', error);
+      res.status(500).send('Error deleting NishaData');
+  }
+});
+
+app.delete('/nishaopsdata/:id', async (req, res) => {
+  try {
+      await NishaOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting NishaOpsData:', error);
+      res.status(500).send('Error deleting NishaOpsData');
+  }
+});
+
+
+// Define your routes for deleting anit and anitOpsData
+app.delete('/anitdata/:id', async (req, res) => {
+  try {
+      await AnitData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting AnitData:', error);
+      res.status(500).send('Error deleting AnitData');
+  }
+});
+
+app.delete('/anitOpsData/:id', async (req, res) => {
+  try {
+      await AnitOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting AnitData:', error);
+      res.status(500).send('Error deleting AnitData');
+  }
+});
+
+
+// Define your routes for deleting anurandhan and anurandhanOpsData
+app.delete('/anurdata/:id', async (req, res) => {
+  try {
+      await AnurandhanData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting AnurandhanData:', error);
+      res.status(500).send('Error deleting AnurandhanData');
+  }
+});
+
+app.delete('/anuropsdata/:id', async (req, res) => {
+  try {
+      await AnurandhanOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting AnurandhanData:', error);
+      res.status(500).send('Error deleting AnurandhanData');
+  }
+});
+
+
+// Define your routes for deleting furkan and furkanOpsData
+app.delete('/furkandata/:id', async (req, res) => {
+  try {
+      await FurkanData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting FurkanData:', error);
+      res.status(500).send('Error deleting FurkanData');
+  }
+});
+
+app.delete('/furkanopsdata/:id', async (req, res) => {
+  try {
+      await FurkanOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting FurkanData:', error);
+      res.status(500).send('Error deleting FurkanData');
+  }
+});
+
+// Define your routes for deleting Manojdata and manojopsdata
+app.delete('/manojdata/:id', async (req, res) => {
+  try {
+      await ManojData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting ManojData:', error);
+      res.status(500).send('Error deleting ManojData');
+  }
+});
+
+app.delete('/manojopsdata/:id', async (req, res) => {
+  try {
+      await ManojOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting ManojData:', error);
+      res.status(500).send('Error deleting ManojData');
+  }
+});
+
+// Define your routes for deleting Muskan and muskanopsdata
+app.delete('/muskandata/:id', async (req, res) => {
+  try {
+      await MuskanData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting MuskanData:', error);
+      res.status(500).send('Error deleting MuskanData');
+  }
+});
+
+app.delete('/muskanopsdata/:id', async (req, res) => {
+  try {
+      await MuskanOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting muskanopsData:', error);
+      res.status(500).send('Error deleting muskanopsData');
+  }
+});
+
+
+// Define your routes for deleting aaditi and aaditiopsdata
+app.delete('/aaditidata/:id', async (req, res) => {
+  try {
+      await AaditiData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting Aaditi Data:', error);
+      res.status(500).send('Error deleting Aaditi Data');
+  }
+});
+
+app.delete('/aaditiopsdata/:id', async (req, res) => {
+  try {
+      await AaditiOpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting aaditiopsData:', error);
+      res.status(500).send('Error deleting aaditiopsData');
+  }
+});
+
+// delete for dataviwer page row
+app.delete('/data/:id', async (req, res) => {
+  try {
+      await Data.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting Aaditi Data:', error);
+      res.status(500).send('Error deleting Aaditi Data');
+  }
+});
+
+app.delete('/opsdata/:id', async (req, res) => {
+  try {
+      await OpsData.findByIdAndDelete(req.params.id);
+      res.status(204).send(); // 204 No Content - Successful deletion
+  } catch (error) {
+      console.error('Error deleting aaditiopsData:', error);
+      res.status(500).send('Error deleting aaditiopsData');
+  }
+});
+
+
+app.get('/download-zip', (req, res) => {
+    const files = req.query.files.split(',');
+
+    res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': `attachment; filename=download.zip`
+    });
+
+    const zip = archiver('zip', { zlib: { level: 9 } });
+
+    zip.on('error', (err) => res.status(500).send({ error: 'Error creating zip file' }));
+
+    zip.pipe(res);
+
+    files.forEach((file) => {
+        const filePath = path.join(__dirname, 'uploads', file);
+        if (fs.existsSync(filePath)) {
+            zip.file(filePath, { name: path.basename(file) });
+        }
+    });
+
+    zip.finalize();
+});
+
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

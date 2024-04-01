@@ -1,0 +1,213 @@
+body {
+  
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    /* / height: 100vh; / */
+    background-color: #f5f5f5;
+    /* background-image: url('c:\Users\NBU\Downloads\Image Background Purple Minimal Phone Wallpaper (2).png'); */
+    background-size: cover; 
+    background-position: center; 
+    color: black; 
+}
+
+h1 {
+    text-align: center;
+    position: relative;
+    color: black; 
+    /* background-color:rgba(0, 255, 191, 0.5); */
+    padding: 5px;
+    margin-top: 5px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+
+  
+
+h1:hover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    z-index: -1;
+}
+
+label {
+    font-size: 20px;
+    font-weight: bold;
+}
+h6 {
+    font-weight: 600;
+    font-size: 15px;
+    color: rgb(52, 43, 43);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    background-color: beige;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1000px;
+    display: flex;
+    flex-wrap: wrap;
+    transition: background-color 0.3s ease; 
+    min-width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    
+}
+.form-input,
+select,
+.btn {
+  width: 100%;
+  max-width: 400px; 
+  padding: 14px; 
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 8px;
+  transition: border-color 0.3s ease;
+}
+.form-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.case-login-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.column {
+    flex: 1;
+    margin: 0 10px;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: black;
+}
+.lender-label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  .checkbox-option input {
+    margin-right: 8px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+}
+  
+  .checkbox-option {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 5px;
+    margin-top: 2px;
+
+   
+  }
+  
+
+input, select, button, textarea {
+    width: 100%;
+    padding: 14px; 
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 8px;
+    transition: border-color 0.3s ease; 
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #2626e4; 
+}
+
+select {
+    appearance: none;
+}
+
+
+
+.btn {
+    font-weight: 600;
+    padding: 18px;
+    /*Adjustedpadding*/margin: auto;
+    border-radius: 9px;
+    outline: none;
+    border: solid 2px #2626e4;
+    font-size: 18px;
+    color: #2626e4;
+    cursor: pointer;
+    width: 10rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    
+}
+
+.btn:hover {
+    background: #2626e4;
+    color: #fff;
+}
+
+.submit-btn {
+    
+    background-color: darkslateblue;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #2626e4;
+}
+
+option {
+    font-size: medium;
+    font-weight: 700;
+}
+.lender-label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  select optgroup:first-of-type {
+           /* Make the group label italic */
+    color: #555151;            /* Set the text color */
+    background-color: #f3f3f3; /* Light grey background */
+    font-weight: bold;         /* Make the text bold */
+    font-size: medium;
+}
+select optgroup:nth-of-type(2) {      /* Make the group label italic */
+    color: #1c1a1a;            /* Set the text color */
+    background-color: #f3f3f3; /* Light grey background */
+    font-weight: bold;         /* Make the text bold */
+    font-size: medium;         /* Set font size to medium */
+}
