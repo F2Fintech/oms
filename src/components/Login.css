@@ -72,6 +72,8 @@
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
+  color: white;
+  font-weight: 650;
 }
 
 .centered-form input[type="text"],

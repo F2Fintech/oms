@@ -74,7 +74,7 @@ const OpsTeamRegister = () => {
   };
 
   return (
-    <div className="container"> 
+    <div className="container1"> 
       <form onSubmit={handleSubmit} className="form"> 
         <h2>Ops Team Registration</h2>
         <div className="formGroup"> 

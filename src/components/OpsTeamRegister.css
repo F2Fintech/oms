@@ -1,78 +1,74 @@
-/* OpsTeamRegister.css */
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 110vh;
-  width: 40vw;
-  margin-left: 400px;
-  margin-top: -60px;
-  
-}
-
-h2 {
-  
-  font-weight: bold;
-  color: white;
-  font-size: 25px;
-}
-.form {
+.container1 {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  align-items: center;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: rgb(73, 59, 179);
+}
+
+.container1 h2 {
+  
+  margin-bottom: 10px;
+  text-align: center;
+  color: white;
+}
+
+.form {
+  max-width: 400px;
+  width: 100%;
+  background-color: #933e38;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .formGroup {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .label {
   margin-bottom: 5px;
+  color: white;
+  font-weight: bold;
 }
 
 .input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  position: relative; /* Add this to position the icon */
-}
-
-/* Add the styles for the Show Password icon */
-.input::after {
-  content: '\f06e'; /* Unicode for the FontAwesome eye icon */
-  font-family: 'Font Awesome 5 Free';
-  position: absolute;
-  right: 10px; /* Adjust the right offset as needed */
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 
 .button {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
-  background-color: #972f34;
-  color: white;
+  border-radius: 5px;
   cursor: pointer;
-  width: 100px;
-  transition: background-color 0.3s ease; /* Smooth transition for background-color */
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #35963a; /* Change background color on hover */
+  background-color: #0056b3;
 }
 
 .message {
+  margin-top: 15px;
   color: green;
 }
 
+.error {
+  margin-top: 5px;
+  color: red;
+}
 
-.opsteam {
-  background-color: black;
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .form {
+    max-width: 90%;
+  }
 }

@@ -427,7 +427,7 @@ state: String,
 city: String,
 customerOccupation: String,
 requiredLoanType: String,
-requiredLoanAmount: Number,
+requiredLoanAmount: String,
 latestCIBILScore: String,
 bankingPassAndOtherDocPass: String,
 toBeLoggedInFromWhichLender: String,
@@ -1164,6 +1164,50 @@ app.get('/download-zip', (req, res) => {
     zip.finalize();
 });
 
+// API endpoint
+app.get('/records/:employeeIdOfCaseOwner', async (req, res) => {
+  const { employeeIdOfCaseOwner } = req.params;
+
+  try {
+    // Find records from Data model for the given employee ID
+    const recordsModel1 = await Data.find({ employeeIdOfCaseOwner });
+
+    // Find all unique customerPan values from Data model records
+    const uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.customerPan)));
+
+    // Find matching records from OpsData model for each unique customerPan
+    const recordsModel2 = await OpsData.find({ customerPan: { $in: uniqueCustomerPans } });
+
+    // Add source and model fields to each record from Data model
+    const recordsModel1WithSource = recordsModel1.map(record => ({
+      ...record.toObject(),
+      source: 'Data',
+      model: 'Model1'
+    }));
+
+    // Add source and model fields to each record from OpsData model
+    const recordsModel2WithSource = recordsModel2.map(record => ({
+      ...record.toObject(),
+      source: 'OpsData',
+      model: 'Model2'
+    }));
+
+    // Merge records based on customerPan
+    const mergedRecords = [];
+
+    recordsModel1WithSource.forEach(record1 => {
+      const matchingRecord2 = recordsModel2WithSource.find(record2 => record2.customerPan === record1.customerPan);
+      if (matchingRecord2) {
+        mergedRecords.push({ ...record1, ...matchingRecord2 });
+      }
+    });
+
+    res.json(mergedRecords);
+  } catch (error) {
+    console.error('Error fetching records:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

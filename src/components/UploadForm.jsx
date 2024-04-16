@@ -9,7 +9,7 @@ function UploadForm() {
 
   const [formData, setFormData] = useState({
     dateOfLogin: '',
-    employeeIdOfCaseOwner: 'F2-369-001',
+    employeeIdOfCaseOwner: '',
     employeeName: '',
     dateOfBirth: '',
     managerName: '',
@@ -38,9 +38,128 @@ function UploadForm() {
   });
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+    let updatedValue = value;
+    
+   // Convert alphabetic characters to uppercase for all fields except email
+    if (name !== 'mailId' && typeof value === 'string') {
+        updatedValue = value.toUpperCase();
+    }
 
+    // Convert email to lowercase
+    if (name === 'mailId') {
+        updatedValue = value.toLowerCase();
+    }
+
+    setFormData({ ...formData, [name]: updatedValue });
+
+    // Fetch employee name based on selected employee ID
+    const employeeNames = {
+      'F2-369-001': 'CUSTOMER',
+      'F2-369-101': 'NEHA SINGH',
+      'F2-369-173': 'ANSHIKA KHOLI',
+      'F2-369-175': 'ROSHAN YADAV',
+      'F2-369-188': 'JOLLY KUMARI',
+      'F2-369-189': 'MUSKAN JAISWAL',
+      'F2-369-190': 'ADITI SINGHAL',
+      'F2-369-191': 'RANI KUMARI',
+      'F2-369-192': 'AMBAR RAJ JAISWAL',
+      'F2-369-193': 'ADARSH THAKUR',
+      'F2-369-199': 'ANKUSH SHARMA',
+      'F2-369-210': 'MANISHA CHAUHAN',
+      'F2-369-224': 'MAMTA KANOJIA',
+      'F2-369-225': 'SURAJ KUMAR',
+      'F2-369-226': 'SAGAR CHAUHAN',
+      'F2-369-003': 'SHASHANK SHARMA',
+      'F2-369-004': 'JIYA SINGH RAJPUT',
+      'F2-369-005': 'RAJKUMARI',
+      'F2-369-006': 'SHIVANI KASHYAP',
+      'F2-369-008': 'MANOJ KUMAR',
+      'F2-369-009': 'MANISHA SAXENA',
+      'F2-369-010': 'AKANSHA BHARTI',
+      'F2-369-018': 'BARKHA SINGH',
+      'F2-369-019': 'FURKAN JUNG',
+      'F2-369-020': 'PRAGATI SAXENA',
+      'F2-369-021': 'UJALA RISHIWAL',
+      'F2-369-023': 'JAI SINGH',
+      'F2-369-024': 'SHARDA KUSHWAH',
+      'F2-369-025': 'KRISHNA THAKUR',
+      'F2-369-026': 'NEHA LAKRA',
+      'F2-369-045': 'HIMANSHI SINGH',
+      'F2-369-056': 'TARUN DHEEMAN',
+      'F2-369-077': 'SHUBHAM PAHTAK',
+      'F2-369-079': 'ANURANDHAN KUMAR',
+      'F2-369-083': 'PRASHANT KUMAR',
+      'F2-369-085': 'ADITYA RAWAL',
+      'F2-369-106': 'RIYA CHADDHA',
+      'F2-369-107': 'VINEET TIWARI',
+      'F2-369-118': 'PRADEEP KUMAR',
+      'F2-369-120': 'MANSI PORWAL',
+      'F2-369-122': 'NEHA DANISH',
+      'F2-369-130': 'ROZI PRAVEEN',
+      'F2-369-132': 'LAKHVINDER SINGH',
+      'F2-369-133': 'KAJAL KASHYAP',
+      'F2-369-135': 'RASHI GANGWAR',
+      'F2-369-136': 'KRISHNA PANDEY',
+      'F2-369-138': 'ANIT SINHA',
+      'F2-369-145': 'PRERNA THAKUR',
+      'F2-369-148': 'ADITYACHAUHAN',
+      'F2-369-149': 'NISHA CHAUHAN',
+      'F2-369-150': 'SANIA IRSHAD',
+      'F2-369-152': 'ABHISHEK TRIVEDI',
+      'F2-369-155': 'RENU MATHUR',
+      'F2-369-157': 'TANNU YADAV',
+      'F2-369-159': 'SHWETA RAJPUT',
+      'F2-369-166': 'HIMANSHI SINGH',
+      'F2-369-167': 'RITU ANURAGI',
+      'F2-369-168': 'AMIR ALAM',
+      'F2-369-172': 'PALAK MITTAL',
+      'F2-369-183': 'ANURAG SHARMA',
+      'F2-369-196': 'SHIVANGI KASHYAP',
+      'F2-369-197': 'HARSH TYAGI',
+      'F2-369-200': 'NOOR UL HUDA',
+      'F2-369-201': 'TUBA KHAN',
+      'F2-369-202': 'AADI SONI',
+      'F2-369-205': 'ANKIT PAL',
+      'F2-369-208': 'PRIYANSHU PAL',
+      'F2-369-209': 'SHIVAM KUMAR',
+      'F2-369-215': 'CHANCHAL PRAJAPATI',
+      'F2-369-218': 'VISHAL',
+      'F2-369-219': 'RITIKA SINGHAL',
+      'F2-369-220': 'ROHIT CHAUHAN',
+      'F2-369-222': 'IRAM KHAN',
+      'F2-369-223': 'MANSIKASHYAP',
+      'INT-369-034': 'ANKITA KUNDU',
+      'INT-369-021': 'AYESHKANTA MOHAPATRA',
+      'INT-369-024': 'JASHANPREET',
+      'INT-369-029': 'KHUSHI BAJORIA',
+      'INT-369-028': 'MANIK RANA',
+      'INT-369-032': 'PRANAV ACHARYA',
+      'INT-369-023': 'RAHUL SAHA',
+      'INT-369-022': 'SIDDHART',
+      'INT-369-030': 'SIDDHI SINGH',
+      'INT-369-033': 'SNEHAL SHARMA',
+      'INT-369-035': 'VIKRANT CHOUDHARY',
+    };
+    
+
+    if (name === 'employeeIdOfCaseOwner') {
+      // Allow manual input for 'CUSTOMER', 'CHANNEL PARTNER', and 'SOURCER'
+      if (['CUSTOMER', 'CHANNEL PARTNER', 'SOURCER','INTERN'].includes(value)) {
+        // Clear the employeeName field so that it can be manually filled
+        setFormData((prevData) => ({
+          ...prevData,
+          employeeName: '',
+        }));
+      } else {
+        // For other cases, populate employeeName automatically
+        setFormData((prevData) => ({
+          ...prevData,
+          employeeName: employeeNames[value] || '',
+        }));
+      }
+    }
+  };
   const [files, setFiles] = useState({
     aadhar: null,
     pan: null,
@@ -91,36 +210,34 @@ const handleRemoveFile = (index) => {
   
   
   const lenderOptions = [
+    'Aditya Birla',
+    'Axis Bank',
     'Bajaj Finance',
     'Bajaj Market',
-    'Bajaj MS',
-    'Tata Capital',
+    'Bajaj salpl',
+    'Chola Mandalam',
+    'Finnable',
     'HDFC',
-    'Axis Bank',
+    'Hero FinCorp',
     'ICICI Bank',
     'Kotak Mahindra Bank',
     'Paysense',
-    'Chola Mandalam',
-    'Aditya Birla',
-    'Finnable',
-    'Hero FinCorp',
-    'Godrej',
-    
-  ];
-  const lenderOptions1 = [
-  
+    'Tata Capital',
+];
+
+const lenderOptions1 = [
     'Federal Bank',
     'FULLERTON',
-    'L&T',
-    'Yes Bank',
-    'Indusind',
+    'Godrej',
     'ICICI Education Loan',
-    'Upward',
-    'Lending kart',
     'Incred',
-    'Others'
-    
-  ];
+    'Indusind',
+    'L&T',
+    'Others',
+    'Upward',
+    'Yes Bank',
+];
+
   
 
   const handleUpload = async () => {
@@ -217,6 +334,19 @@ const handleRemoveFile = (index) => {
   // Generate employeeIdOfCaseOwner values from F2-369-001 to F2-369-400
   const employeeIds = Array.from({ length: 400 }, (_, index) => `F2-369-${String(index + 1).padStart(3, '0')}`);
 
+  const additionalIds = [
+    'INT-369-001', 'INT-369-002', 'INT-369-003', 'INT-369-004', 'INT-369-005',
+'INT-369-006', 'INT-369-007', 'INT-369-008', 'INT-369-009', 'INT-369-010',
+'INT-369-011', 'INT-369-012', 'INT-369-013', 'INT-369-014', 'INT-369-015',
+'INT-369-016', 'INT-369-017', 'INT-369-018', 'INT-369-019', 'INT-369-020',
+'INT-369-021', 'INT-369-022', 'INT-369-023', 'INT-369-024', 'INT-369-025',
+'INT-369-026', 'INT-369-027', 'INT-369-028', 'INT-369-029', 'INT-369-030',
+'INT-369-031', 'INT-369-032', 'INT-369-033', 'INT-369-034', 'INT-369-035',
+'INT-369-036', 'INT-369-037', 'INT-369-038', 'INT-369-039', 'INT-369-040',
+'INT-369-041', 'INT-369-042', 'INT-369-043', 'INT-369-044', 'INT-369-045',
+'INT-369-046', 'INT-369-047', 'INT-369-048', 'INT-369-049', 'INT-369-050'
+  ];
+  const allEmployeeIds = [...employeeIds, ...additionalIds];
 
   return (
     <>
@@ -243,8 +373,13 @@ const handleRemoveFile = (index) => {
                 name="employeeIdOfCaseOwner"
                 value={formData.employeeIdOfCaseOwner}
                 onChange={handleInputChange}
-              >
-                {employeeIds.map((id) => (
+                >
+                  <option value="">Choose Employee ID</option>
+                <option value="CUSTOMER">CUSTOMER</option>
+                <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
+                <option value="SOURCER">SOURCER</option>
+                <option value="INTERN">INTERN</option>
+                {allEmployeeIds.map((id) => (
                   <option key={id} value={id}>{id}</option>
                 ))}
               </select>
@@ -252,30 +387,38 @@ const handleRemoveFile = (index) => {
           </div>
 
           <div className="form-group">
-            <label>
-              Employee Name:
-            
-              <input
-                type="text"
-                name="employeeName"
-                required
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
-
+  <label>
+    Employee Name:
+    <input
+      type="text"
+      name="employeeName"
+      value={formData.employeeName}
+      onChange={handleInputChange}
+      required
+      style={{ textTransform: 'uppercase' }}
+       disabled={formData.employeeIdOfCaseOwner !== 'CUSTOMER' && formData.employeeIdOfCaseOwner !== 'CHANNEL PARTNER' && formData.employeeIdOfCaseOwner !== 'SOURCER' && formData.employeeIdOfCaseOwner !== 'INTERN'}
+    />
+  </label>
+</div>
           <div className="form-group">
-            <label>
-              Employement Type:
-            
-              <input
-                type="text"
-                name="employementType"
-                required
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
+  <label>
+    Employment Type:
+    <select
+      name="employementType"
+      required
+      onChange={handleInputChange}
+      style={{ textTransform: 'uppercase' }}
+    >
+      <option value="">Select Employment Type</option>
+      <option value="SALARIED">SALARIED</option>
+      <option value="SOURCER">SOURCER</option>
+      <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
+      <option value="CUSTOMER">CUSTOMER</option>
+      <option value="INTERN">INTERN</option>
+    </select>
+  </label>
+</div>
+
 
           <div className="form-group">
           <label>
@@ -287,6 +430,7 @@ const handleRemoveFile = (index) => {
               <option value="ABHINAV AWAL">ABHINAV AWAL</option>
               <option value="HARPREET SINGH">HARPREET SINGH</option>
               <option value="PRADEEP KUMAR">PRADEEP KUMAR</option>
+              <option value="ROZI">ROZI</option>
               <option value="DEEPANSHU">DEEPANSHU</option>
               <option value="NEHA LAKRA">NEHA LAKRA</option>
               <option value="PARSANT KUMAR">PARSANT KUMAR</option>
@@ -371,16 +515,24 @@ const handleRemoveFile = (index) => {
             </label>
           </div>
           <div className="form-group">
-            <label>
-              Customer Occupation:
-              <input
-                type="text"
-                name="customerOccupation"
-                required
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
+  <label>
+    Customer Occupation:
+    <select
+      name="customerOccupation"
+      required
+      onChange={handleInputChange}
+      
+    >
+      <option value="">Select Occupation</option>
+      <option value="PROFESSIONAL">PROFESSIONAL</option>
+      <option value="SALARIED">SALARIED</option>
+      <option value="CORPORATE">CORPORATE</option>
+      <option value="SELF-EMPLOYED">SELF-EMPLOYED</option>
+      <option value="OTHER">OTHER</option>
+    </select>
+  </label>
+</div>
+
           <div className="form-group">
             <label>
               Customer Contact:
@@ -399,7 +551,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="mailId"
                 required
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'lowercase' }}
               />
             </label>
           </div>
@@ -413,7 +566,8 @@ const handleRemoveFile = (index) => {
                 name="customerPan"
                 placeholder='TYPE PAN NUMBER IN CAPITAL LETTER'
                 required
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>
@@ -427,7 +581,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="motherName"
                 
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'uppercase' }}
               />
             </label>
               </div>
@@ -441,7 +596,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="customerCurrentAdd"
                 required
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>
@@ -452,7 +608,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="customerPermanentAddress"
                 required
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>
@@ -463,7 +620,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="officeAddressWithPin"
                 required
-                onChange={handleInputChange}
+                    onChange={handleInputChange}
+                    style={{ textTransform: 'uppercase' }}
               />
             </label>
               </div>
@@ -490,7 +648,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="state"
                 required
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                  style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>
@@ -501,7 +660,8 @@ const handleRemoveFile = (index) => {
                 type="text"
                 name="city"
                 required
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                  style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>
@@ -624,7 +784,8 @@ const handleRemoveFile = (index) => {
               <input
                 type="text"
                 name="remarks"
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                  style={{ textTransform: 'uppercase' }}
               />
             </label>
           </div>

@@ -689,7 +689,7 @@ const handleFilterByCustomerPan = () => {
     {/* Editable input field for dateOfBirth */}
     {editedDataIndex === index ? (
         <input
-            type="text"
+            type="date"
             value={editedData.dateOfBirth}
             onChange={(e) => handleEditDataChange('dateOfBirth', e.target.value)}
         />
@@ -970,7 +970,7 @@ const handleFilterByCustomerPan = () => {
                         <input
                           type="text"
                           value={editedOpsData.customerPan}
-                          onChange={(e) => handleEditChange('customerPan', e.target.value)}
+                          onChange={(e) => handleEditChange('customerPan', e.target.value.toUpperCase())}
                         />
                         ) : (
                         opsData[index].customerPan
@@ -983,7 +983,7 @@ const handleFilterByCustomerPan = () => {
                         <input
                           type="text"
                           value={editedOpsData.loginStatus}
-                          onChange={(e) => handleEditChange('loginStatus', e.target.value)}
+                          onChange={(e) => handleEditChange('loginStatus', e.target.value.toUpperCase())}
                         />
                       ) : (
                         opsData[index].loginStatus
@@ -1097,29 +1097,36 @@ const handleFilterByCustomerPan = () => {
                         <input
                           type="text"
                           value={editedOpsData.opsRemarks}
-                          onChange={(e) => handleEditChange('opsRemarks', e.target.value)}
+                          onChange={(e) => handleEditChange('opsRemarks', e.target.value.toUpperCase())}
                         />
                       ) : (
                         opsData[index].opsRemarks
                       )}
                     </td>
                     <td>
-                      {editIndex === index ? (
-                        <input
-                          type="text"
-                          value={editedOpsData.casePendingFrom}
-                          onChange={(e) => handleEditChange('casePendingFrom', e.target.value)}
-                        />
-                      ) : (
-                        opsData[index].casePendingFrom
-                      )}
-                    </td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.casePendingFrom}
+      onChange={(e) => handleEditChange('casePendingFrom', e.target.value)}
+    >
+      <option value="">Choose Case Pending From</option>
+      <option value="BANKER">BANKER</option>
+      <option value="CUSTOMER">CUSTOMER</option>
+      <option value="CREDIT">CREDIT</option>
+      <option value="SALES">SALES</option>
+      <option value="OPERATION">OPERATION</option>
+      <option value="NA">NA</option>
+    </select>
+  ) : (
+    opsData[index].casePendingFrom
+  )}
+</td>
                     <td>
                       {editIndex === index ? (
                         <input
                           type="text"
                           value={editedOpsData.bankerName}
-                          onChange={(e) => handleEditChange('bankerName', e.target.value)}
+                          onChange={(e) => handleEditChange('bankerName', e.target.value.toUpperCase())}
                         />
                       ) : (
                         opsData[index].bankerName
@@ -1141,7 +1148,7 @@ const handleFilterByCustomerPan = () => {
                         <input
                           type="text"
                           value={editedOpsData.bankerMail}
-                          onChange={(e) => handleEditChange('bankerMail', e.target.value)}
+                          onChange={(e) => handleEditChange('bankerMail', e.target.value.toLowerCase())}
                         />
                       ) : (
                         opsData[index].bankerMail
@@ -1210,34 +1217,42 @@ const handleFilterByCustomerPan = () => {
                             )}
                           </td> */}
 
+<td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.docCheckStatus}
+      onChange={(e) => handleEditChange('docCheckStatus', e.target.value.toUpperCase())}
+    >
+      <option value="">Choose Doc Check Status</option>
+      <option value="DONE">DONE</option>
+      <option value="NOT DONE">NOT DONE</option>
+      <option value="PENDING">PENDING</option>
+    </select>
+  ) : (
+    opsData[index].docCheckStatus
+  )}
+</td>
+
                         <td>
-                        {editIndex === index ? (
-                        <input
-                          type="text"
-                          value={editedOpsData.docCheckStatus}
-                          onChange={(e) => handleEditChange('docCheckStatus', e.target.value)}
-                        />
-                        ) : (
-                        opsData[index].docCheckStatus
-                        )}
-                        </td>
-                        <td>
-                        {editIndex === index ? (
-                        <input
-                          type="text"
-                          value={editedOpsData.docCheckBy}
-                          onChange={(e) => handleEditChange('docCheckBy', e.target.value)}
-                        />
-                        ) : (
-                        opsData[index].docCheckBy
-                        )}
-                        </td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.docCheckBy}
+      onChange={(e) => handleEditChange('docCheckBy', e.target.value)}
+    >
+      <option value="">Choose Doc Check By</option>
+      <option value="MUSKAN">MUSKAN</option>
+      <option value="ADITI">ADITI</option>
+    </select>
+  ) : (
+    opsData[index].docCheckBy
+  )}
+</td>
                                               <td>
                         {editIndex === index ? (
                           <input
                             type="text"
                             value={editedOpsData.tvrStatus}
-                            onChange={(e) => handleEditChange('tvrStatus', e.target.value)}
+                            onChange={(e) => handleEditChange('tvrStatus', e.target.value.toUpperCase())}
                           />
                         ) : (
                           opsData[index].tvrStatus
@@ -1263,49 +1278,69 @@ const handleFilterByCustomerPan = () => {
                           <input
                             type="text"
                             value={editedOpsData.eligibilityCheckStatus}
-                            onChange={(e) => handleEditChange('eligibilityCheckStatus', e.target.value)}
+                            onChange={(e) => handleEditChange('eligibilityCheckStatus', e.target.value.toUpperCase())}
                           />
                         ) : (
                           opsData[index].eligibilityCheckStatus
                         )}
                       </td>
 
-                     <td>
-                        {editIndex === index ? (
-                          <input
-                            type="text"
-                            value={editedOpsData.elgibilityType}
-                            onChange={(e) => handleEditChange('elgibilityType', e.target.value)}
-                          />
-                        ) : (
-                          opsData[index].elgibilityType
-                        )}
-                      </td>
                       <td>
-                        {editIndex === index ? (
-                          <input
-                            type="text"
-                            value={editedOpsData.eligibilityCheckBy}
-                            onChange={(e) => handleEditChange('eligibilityCheckBy', e.target.value)}
-                          />
-                        ) : (
-                          opsData[index].eligibilityCheckBy
-                        )}
-                      </td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.elgibilityType}
+      onChange={(e) => handleEditChange('elgibilityType', e.target.value.toUpperCase())}
+    >
+      <option value="">Choose Eligibility Type</option>
+      <option value="DEGREE">DEGREE</option>
+      <option value="ABB">ABB</option>
+      <option value="TURNOVER">TURNOVER</option>
+      <option value="GROSS PROFIT">GROSS PROFIT</option>
+      <option value="NET PROFIT">NET PROFIT</option>
+    </select>
+  ) : (
+    opsData[index].elgibilityType
+  )}
+</td>
+                      <td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.eligibilityCheckBy}
+      onChange={(e) => handleEditChange('eligibilityCheckBy', e.target.value)}
+    >
+      <option value="">CHOOSE</option>
+      <option value="MUSKAN">MUSKAN</option>
+      <option value="ADITI">ADITI</option>
+    </select>
+  ) : (
+    opsData[index].eligibilityCheckBy
+  )}
+</td>
 
                                           
 
-                                        <td>
-                      {editIndex === index ? (
-                        <input
-                          type="text"
-                          value={editedOpsData.highDegree}
-                          onChange={(e) => handleEditChange('highDegree', e.target.value)}
-                        />
-                      ) : (
-                        opsData[index].highDegree
-                      )}
-                    </td>
+                      <td>
+  {editIndex === index ? (
+    <select
+      value={editedOpsData.highDegree}
+      onChange={(e) => handleEditChange('highDegree', e.target.value)}
+    >
+       <option value="">Choose High Degree</option>
+      <option value="MA">MA</option>
+      <option value="MBBS">MBBS</option>
+      <option value="MD">MD</option>
+      <option value="MS">MS</option>
+      <option value="B.COM">B.COM</option>
+      <option value="M.COM">M.COM</option>
+      <option value="BA">BA</option>
+      <option value="DNB">DNB</option>
+      <option value="PGDCC">PGDCC</option>
+      <option value="CA/CS/ICWA">CA/CS/ICWA</option>
+    </select>
+  ) : (
+    opsData[index].highDegree
+  )}
+</td>
                     <td>
                       {editIndex === index ? (
                         <input
@@ -1405,7 +1440,7 @@ const handleFilterByCustomerPan = () => {
                         <input
                           type="text"
                           value={editedOpsData.creditRemarks}
-                          onChange={(e) => handleEditChange('creditRemarks', e.target.value)}
+                          onChange={(e) => handleEditChange('creditRemarks', e.target.value.toUpperCase())}
                         />
                       ) : (
                         opsData[index].creditRemarks
@@ -1446,7 +1481,7 @@ const handleFilterByCustomerPan = () => {
             </table>
             </div>
 </div>
-  <button className="download-all-btn" onClick={handleDownloadAllData}>Download All Data</button>
+  {/* <button className="download-all-btn" onClick={handleDownloadAllData}>Download All Data</button> */}
         </div>
        
     );

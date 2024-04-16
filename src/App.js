@@ -22,6 +22,7 @@ import ViewRecording from './components/ViewRecording';
 import ViewOpsRec from './components/ViewOpsRec';
 import SalesRecView from './components/SalesRecView';
 import AdminPage from './components/AdminPage';
+import Record from './components/Record';
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
@@ -30,7 +31,7 @@ function App() {
   const setToken = (token) => {
     setAuthToken(token);
     localStorage.setItem('token', token);
-    navigate('/dataview'); // Navigate to DataViewer after setting the token
+    navigate('/salesview'); // Navigate to DataViewer after setting the token
   };
 
   // logout functionality
@@ -61,6 +62,7 @@ function App() {
     <>
       <Navbar />
       <Routes>
+      <Route path="/record" element={<Record />} />
       <Route path="/rec" element={<RecordingUpload />} />
          <Route path="/tvrrec" element={<ViewRecording />} />
         <Route path="/opsrec" element={<ViewOpsRec />} />
@@ -76,7 +78,7 @@ function App() {
         <Route path='/' element={<UploadForm />} />
         <Route path='/opsForm' element={<OpsForm />} />
         <Route path='/login' element={<Login setToken={setToken} />} />
-        <Route path='/dataview' element={
+        <Route path='/salesview' element={
           <ProtectedRoute>
           <DataViewer onLogout={logout} />
         </ProtectedRoute>

@@ -1,0 +1,52 @@
+/* Record.css */
+.approved {
+    background-color: yellow;
+}
+
+.rejected {
+    background-color: red;
+}
+/* Record.css */
+.disbursed {
+    background-color: green;
+}
+.hold {
+    background-color: pink;
+}
+
+.drop {
+    background-color: purple;
+}
+
+/* Record.css */
+.text-white {
+    color: white;
+}
+
+.record-btn {
+    background-color: #324090;
+    padding: 10px;
+    border: none;
+    border-radius: 50px;
+    width: 7%;
+    margin-bottom: 10px;
+    color: white;
+}
+.record-btn:hover {
+    background-color: #180d2b;
+    color: white;
+}
+
+.record-err {
+    color: red;
+    margin-bottom: 5px;
+    font-size: x-large;
+}
+
+.track-rec select {
+    margin-top: 30px;
+    width: 20%;
+    margin-right: 10px;
+    border: 1px solid black;
+    border-radius: 50px;
+}
