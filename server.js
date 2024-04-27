@@ -1,4 +1,5 @@
 require('dotenv').config();
+const axios = require('axios');
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
@@ -12,6 +13,7 @@ const jwt = require('jsonwebtoken');
 const Audio = require('./models/uploadrecording');
 const OpsRec = require('./models/OpsRecording');
 const SalesAudio = require('./models/SalesRecording');
+const Doctor = require('./models/Doctor');
 
 
 
@@ -39,6 +41,65 @@ const recordingUpload = multer();
 mongoose.connect("mongodb://localhost:27017/april24-oms")
 .then((e) => console.log("Mongodb connected"));
 
+
+// Function to generate JWT token
+function generateToken() {
+  const random = Math.round(Math.random() * 1000000000);
+  const timestamp = Math.floor(Date.now() / 1000);
+  const secretKey = "UTA5U1VEQXdNREF4TWpjM1QwUm5lRTFFV1hkTlJFVjZUbEU5UFE9PQ=="; // Replace with your actual secret key
+
+  const token = require('jsonwebtoken').sign({
+      iss: "PSPRINT",
+      timestamp: timestamp,
+      partnerId: "CORP00001277",
+      product: "WALLET",
+      reqid: random
+  }, secretKey, {
+      algorithm: 'HS256'
+  });
+
+  return token;
+}
+
+app.post('/check-doctor-cibil', async (req, res) => {
+  const { name, mobile, document_id} = req.body;
+
+  if (!name || !mobile || !document_id) {
+      return res.status(400).json({ error: 'Please fill all fields!!!' });
+  }
+
+
+  try {
+  // Save user details to MongoDB
+  const doctor = new Doctor({ name, mobile, document_id });
+  await doctor.save();
+
+  const token = generateToken();
+
+  const options = {
+      method: 'POST',
+      url: 'https://api.verifya2z.com/api/v1/verification/credit_report_checker',
+      headers: {
+          accept: 'application/json',
+          Token: token,
+          authorisedkey: 'T0RneE1EWXdNREV6TlRFME5UbERUMUpRTURBd01ERXlOemM9',
+          'User-Agent': 'CORP00001277',
+          'content-type': 'application/json'
+      },
+      data: {
+          name,
+          mobile,
+          document_id
+      }
+  };
+
+   const response = await axios.request(options);
+  res.json(response.data);
+} catch (error) {
+  console.error('Error:', error);
+  res.status(500).json({ error: 'Internal Server Error' });
+}
+});
 
 
 // Handle file uploads for both Audio and OpsAudio models
@@ -340,6 +401,7 @@ const dataSchema = new mongoose.Schema({
     bankingPassAndOtherDocPass: String,
     toBeLoggedInFromWhichLender: String,
     remarks: String,
+    uniqueno: String,
     files:[String]
 });
 
@@ -350,6 +412,7 @@ const dataSchema = new mongoose.Schema({
 const opsTeamSchema = new mongoose.Schema({
   pocName: String,
   customerPan: String,
+  uniqueno: String,
   docCheckStatus: String,
   docCheckBy: String,
   tvrStatus: String,
@@ -496,6 +559,26 @@ function formatDate(date) {
     const seconds = date.getSeconds().toString().padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+
+// Pre-save hook to generate unique number before saving
+dataSchema.pre('save', function(next) {
+  if (!this.uniqueno) {
+    this.uniqueno = generateUniqueNumber();
+  }
+  next();
+});
+
+// Function to generate a random 6-character alphanumeric string
+function generateUniqueNumber() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 const Data = mongoose.model('Data', dataSchema);
 const OpsData = mongoose.model('OpsData',opsTeamSchema);
 const NishaData = mongoose.model('NishaData',nishaDataSchema);
@@ -674,7 +757,7 @@ app.post('/opsassign/aaditi', async (req, res) => {
 // Route to upload data and files
 app.post('/upload', upload.array('files'), async (req, res) => {
     const {dateOfLogin,employeeIdOfCaseOwner, employeeName,adharCard,dateOfBirth, managerName,employementType,branchName,customerName,customerContact,mailId,customerPan,customerDateOfBirth,motherName,nominee,customerPermanentAddress,customerCurrentAdd,
-        officeAddressWithPin,pinCode,state,city,customerOccupation,requiredLoanAmount,requiredLoanType,latestCIBILScore,bankingPassAndOtherDocPass,toBeLoggedInFromWhichLender,remarks} = req.body;
+        officeAddressWithPin,pinCode,state,city,customerOccupation,requiredLoanAmount,requiredLoanType,latestCIBILScore,bankingPassAndOtherDocPass,toBeLoggedInFromWhichLender,remarks,uniqueno} = req.body;
     const files = req.files.map(file => file.filename);
 
     const newData = new Data({
@@ -706,6 +789,7 @@ app.post('/upload', upload.array('files'), async (req, res) => {
         bankingPassAndOtherDocPass,
         toBeLoggedInFromWhichLender,
         remarks,
+        uniqueno,
         files
     });
 
@@ -721,7 +805,7 @@ app.post('/upload', upload.array('files'), async (req, res) => {
 
 // Route to upload Ops Team data
 app.post('/upload-ops', async (req, res) => {
-  const{pocName,customerPan,docCheckStatus,docCheckBy,tvrStatus,tvrDoneBy,eligibilityCheckStatus,eligibilityCheckBy,loginStatus,loginDoneBy,loginDate,leadId,caseStatus,kfs,lastUpdateDate,appovalDate,disbursalDate,opsRemarks,casePendingFrom,bankerName,bankerNo,bankerMail,cashBackAmount,finalApproval,finalDisbAmnt,highDegree,regYear,totalActiveLoanCountAmount,creditCardStatus,bounIn6Month,enquariesIn6Month,totalSal,totalExtraIncome,totalCalculatedSal,elgibilityType,creditSuggLender,creditRemarks} = req.body;
+  const{pocName,customerPan,docCheckStatus,docCheckBy,tvrStatus,tvrDoneBy,eligibilityCheckStatus,eligibilityCheckBy,loginStatus,loginDoneBy,loginDate,leadId,caseStatus,kfs,lastUpdateDate,appovalDate,disbursalDate,opsRemarks,casePendingFrom,bankerName,bankerNo,bankerMail,cashBackAmount,finalApproval,finalDisbAmnt,highDegree,regYear,totalActiveLoanCountAmount,creditCardStatus,bounIn6Month,enquariesIn6Month,totalSal,totalExtraIncome,totalCalculatedSal,elgibilityType,creditSuggLender,creditRemarks,uniqueno} = req.body;
 const opData = new OpsData({
   pocName,
   customerPan,
@@ -759,7 +843,8 @@ const opData = new OpsData({
   totalCalculatedSal,
   elgibilityType,
   creditSuggLender,
-  creditRemarks
+  creditRemarks,
+  uniqueno
 });
 
   try {
@@ -1164,50 +1249,183 @@ app.get('/download-zip', (req, res) => {
     zip.finalize();
 });
 
-// API endpoint
-app.get('/records/:employeeIdOfCaseOwner', async (req, res) => {
-  const { employeeIdOfCaseOwner } = req.params;
+// Manually created user credentials
+const userCredentials = {
+  'SOURCER': { password: 'SouRcer@123' },
+  'CHANNEL PARTNER': { password: 'cHanne1@123' },
+  'INTERN' : { password: 'intern@123' },
+  'F2-369-001': { password: 'H@rpRe3t#Singh' },
+  'F2-369-002': { password: 'AbhiN@v@waL' },
+  'F2-369-101': { password: 'Neh@_Singh_101' },
+  'F2-369-173': { password: 'Anshika@Kh0li' },
+  'F2-369-175': { password: 'R0sh@nY@d@v' },
+  'F2-369-188': { password: 'Jolly_Kumari123' },
+  'F2-369-189': { password: 'Musk@n_J@iSw@l' },
+  'F2-369-190': { password: 'AditiS1ngh@l' },
+  'F2-369-191': { password: 'R@niKum@ri_123' },
+  'F2-369-192': { password: 'Ambar_R@@j' },
+  'F2-369-193': { password: 'Ad@rshTh@kur!23' },
+  'F2-369-199': { password: 'AnkushSh@rm@123' },
+  'F2-369-210': { password: 'M@nishaC@h@n!23' },
+  'F2-369-224': { password: 'M@mtaK@noji@!23' },
+  'F2-369-225': { password: 'Sur@jKum@r!23' },
+  'F2-369-226': { password: 'S@g@rC@hu@n123' },
+  'F2-369-003': { password: 'Sh@sh@nk_Sh@rm@!23' },
+  'F2-369-004': { password: 'Jiy@SinghR@jput123' },
+  'F2-369-005': { password: 'R@jkum@ri123' },
+  'F2-369-006': { password: 'Shiv@niK@shy@p!23' },
+  'F2-369-008': { password: 'M@noj_Kum@r_123' },
+  'F2-369-009': { password: 'M@nishaS@xen@123' },
+  'F2-369-010': { password: 'Ak@nsh@Bh@rti123' },
+  'F2-369-018': { password: 'B@rkhaSingh_123' },
+  'F2-369-019': { password: 'Furk@nJung123' },
+  'F2-369-020': { password: 'Pr@g@tiS@xen@123' },
+  'F2-369-021': { password: 'Uj@laRishiwal!23' },
+  'F2-369-023': { password: 'J@iSingh123' },
+  'F2-369-024': { password: 'Sh@rd@Kushw@h123' },
+  'F2-369-025': { password: 'Krishn@Th@kur!23' },
+  'F2-369-026': { password: 'NehaL@kr@_123' },
+  'F2-369-045': { password: 'Him@nsh!Singh123' },
+  'F2-369-056': { password: 'T@runDheem@n!23' },
+  'F2-369-077': { password: 'Shubh@m_P@ht@k123' },
+  'F2-369-079': { password: 'Anur@ndh@n_Kum@r!23' },
+  'F2-369-083': { password: 'Pr@sh@nt_Kum@r123' },
+  'F2-369-085': { password: 'Adity@_R@w@l123' },
+  'F2-369-106': { password: 'Riy@_Ch@ddh@123' },
+  'F2-369-107': { password: 'Vin@@t_Tiw@ri!23' },
+  'F2-369-118': { password: 'Pr@deep_Kum@r123' },
+  'F2-369-120': { password: 'M@nsi_Porw@l123' },
+  'F2-369-122': { password: 'Neh@_D@nish_123' },
+  'F2-369-130': { password: 'Roz!_Pr@veen123' },
+  'F2-369-132': { password: 'L@khvind@r_Singh123' },
+  'F2-369-133': { password: 'K@j@l_K@shy@p123' },
+  'F2-369-135': { password: 'R@shi_G@ngw@r123' },
+  'F2-369-136': { password: 'Krishn@_P@ndey123' },
+  'F2-369-138': { password: 'Anit_Sinh@123' },
+  'F2-369-145': { password: 'Prern@_Th@kur123' },
+  'F2-369-148': { password: 'Adity@_Ch@uh@n123' },
+  'F2-369-149': { password: 'Nish@_Ch@uh@n123' },
+  'F2-369-150': { password: 'S@ni@_Irsh@d123' },
+  'F2-369-152': { password: 'Abhish@k_Trivedi123' },
+  'F2-369-155': { password: 'Renu_M@thur123' },
+  'F2-369-157': { password: 'T@nnu_Y@d@v123' },
+  'F2-369-159': { password: 'Shwet@_R@jput123' },
+  'F2-369-166': { password: 'Him@nsh!Singh_1123' },
+  'F2-369-167': { password: 'Ritu_Anur@gi123' },
+  'F2-369-168': { password: 'Amir_Al@m_123' },
+  'F2-369-172': { password: 'P@l@k_Mitt@l123' },
+  'F2-369-183': { password: 'Anur@g_Sh@rm@123' },
+  'F2-369-196': { password: 'Shiv@ngi_K@shy@p123' },
+  'F2-369-197': { password: 'H@rsh_Ty@g!123' },
+  'F2-369-200': { password: 'Noor_Ul_Hud@123' },
+  'F2-369-201': { password: 'Tub@_Kh@n_123' },
+  'F2-369-202': { password: 'A@di_Soni123' },
+  'F2-369-205': { password: 'Ankit_P@l_123' },
+  'F2-369-208': { password: 'Priy@nshu_P@l123' },
+  'F2-369-209': { password: 'Shiv@m_Kum@r123' },
+  'F2-369-215': { password: 'Ch@nch@l_Pr@j@p@ti123' },
+  'F2-369-218': { password: 'Vish@l_123' },
+  'F2-369-219': { password: 'Ritik@_Singh@l123' },
+  'F2-369-220': { password: 'Rohit_C@hu@n123' },
+  'F2-369-222': { password: 'Ir@m_Kh@n_123' },
+  'F2-369-223': { password: 'M@nsiK@shy@p123' },
+  // for intern
+  'INT-369-034': { password: 'Ankit@_Kundu123' },
+  'INT-369-021': { password: 'Ayeshk@nt@_Moh@p@tr@123' },
+  'INT-369-025': { password: 'Anur@gP@ss' },
+  'INT-369-026': { password: 'AwN!sh@2023' },
+  'INT-369-039': { password: 'Nah@r1234' },
+  'INT-369-037': { password: 'Abdul_P@ss' },
+  'INT-369-024': { password: 'J@shanPr33t#' },
+  'INT-369-029': { password: 'Khu$h!B@j0ria' },
+  'INT-369-036': { password: 'M@n!kR@n@2023' },
+  'INT-369-028': { password: 'N@vr00pK@ur' },
+  'INT-369-032': { password: 'Ach@ry@9876' },
+  'INT-369-023': { password: 'R@hulS@h@2023' },
+  'INT-369-022': { password: 'S!dd@rthL#2023' },
+  'INT-369-030': { password: 'S1ddhi$!ngH@2023' },
+  'INT-369-038': { password: 'Sn3h@l_P@ss' },
+  'INT-369-027': { password: 'San@dp@$$w0rd' },
+  'INT-369-035': { password: 'V1kr@nt_Chou!@rY2023' },
+  // for sourcer
+  'F3-369-003': { password: 'Sourav_#Pass123' },
+  'F3-369-004': { password: 'Manas_$Pass456' },
+  'F3-369-005': { password: 'ShrishtiTomar@_789' },
+  'F3-369-006': { password: 'Muskan&Pass012' },
+  'F3-369-007': { password: 'Pradeep*Pass345' },
+  'F3-369-008': { password: 'Jyoti!Pass678' },
+  'F3-369-009': { password: 'SonuPass_901' },
+  'F3-369-010': { password: 'Neha#Pass234' },
+  'F3-369-011': { password: 'ShamreenPass567!' },
+  'F3-369-012': { password: 'Shazil_Pass890' },
+  'F3-369-013': { password: 'PriyaSharma123#Pass' },
+  'F3-369-014': { password: 'AmanPass$456' },
+  'F3-369-015': { password: 'Shikha@_789Pass' },
+  'F3-369-016': { password: 'SaloniPass012_' },
+  'F3-369-017': { password: 'Abhishek345!Pass' },
+  'F3-369-018': { password: 'KapilPass_678' },
+  'F2369-019': { password: 'PriyaSharma901@Pass' }
+};
 
-  try {
-    // Find records from Data model for the given employee ID
-    const recordsModel1 = await Data.find({ employeeIdOfCaseOwner });
 
-    // Find all unique customerPan values from Data model records
-    const uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.customerPan)));
+// Middleware function for user authentication
+const authenticateUser = (req, res, next) => {
+  const { employeeIdOfCaseOwner, password } = req.body;
 
-    // Find matching records from OpsData model for each unique customerPan
-    const recordsModel2 = await OpsData.find({ customerPan: { $in: uniqueCustomerPans } });
-
-    // Add source and model fields to each record from Data model
-    const recordsModel1WithSource = recordsModel1.map(record => ({
-      ...record.toObject(),
-      source: 'Data',
-      model: 'Model1'
-    }));
-
-    // Add source and model fields to each record from OpsData model
-    const recordsModel2WithSource = recordsModel2.map(record => ({
-      ...record.toObject(),
-      source: 'OpsData',
-      model: 'Model2'
-    }));
-
-    // Merge records based on customerPan
-    const mergedRecords = [];
-
-    recordsModel1WithSource.forEach(record1 => {
-      const matchingRecord2 = recordsModel2WithSource.find(record2 => record2.customerPan === record1.customerPan);
-      if (matchingRecord2) {
-        mergedRecords.push({ ...record1, ...matchingRecord2 });
-      }
-    });
-
-    res.json(mergedRecords);
-  } catch (error) {
-    console.error('Error fetching records:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  // Check if provided employee ID exists in user credentials
+  if (!userCredentials[employeeIdOfCaseOwner]) {
+    return res.status(401).json({ error: 'Invalid employee ID' });
   }
+
+  // Check if provided username and password match
+  if (userCredentials[employeeIdOfCaseOwner].password === password) {
+    next(); // Proceed to the next middleware
+  } else {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+};
+
+// API endpoint for user login
+app.post('/api/login', authenticateUser, (req, res) => {
+  res.json({ message: 'Login successful' });
 });
 
+
+app.get('/api/records/:employeeIdOfCaseOwner', async (req, res) => {
+   const { employeeIdOfCaseOwner } = req.params;
+ 
+   try {
+     const recordsModel1 = await Data.find({ employeeIdOfCaseOwner });
+     const uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.uniqueno)));
+     const recordsModel2 = await OpsData.find({ uniqueno: { $in: uniqueCustomerPans } });
+ 
+     const recordsModel1WithSource = recordsModel1.map(record => ({
+       ...record.toObject(),
+       source: 'Data',
+       model: 'Model1'
+     }));
+ 
+     const recordsModel2WithSource = recordsModel2.map(record => ({
+       ...record.toObject(),
+       source: 'OpsData',
+       model: 'Model2'
+     }));
+ 
+     const mergedRecords = [];
+ 
+     recordsModel1WithSource.forEach(record1 => {
+       const matchingRecord2 = recordsModel2WithSource.find(record2 => record2.uniqueno === record1.uniqueno);
+       if (matchingRecord2) {
+         mergedRecords.push({ ...record1, ...matchingRecord2 });
+       }
+     });
+ 
+     res.json(mergedRecords);
+   } catch (error) {
+     console.error('Error fetching records:', error);
+     res.status(500).json({ error: 'Internal server error' });
+   }
+ });
+ 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

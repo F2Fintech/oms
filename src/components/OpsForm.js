@@ -10,6 +10,7 @@ function OpsForm() {
   const [formData, setFormData] = useState({
     pocName: '',
     customerPan: '',
+    uniqueno: '',
     docCheckStatus: '',
     docCheckBy: '',
     tvrStatus: '',
@@ -58,6 +59,7 @@ function OpsForm() {
     const opsData = {
       pocName: formData.pocName || '',
       customerPan: formData.customerPan || '',
+      uniqueno: formData.uniqueno || '',
     docCheckStatus: formData.docCheckStatus || '',
     docCheckBy: formData.docCheckBy || '',
     tvrStatus: formData.tvrStatus || '',
@@ -146,6 +148,13 @@ function OpsForm() {
             <label>
               Customer Pan:
               <input type='text' name='customerPan' onChange={handleInputChange} />
+            </label>
+          </div>
+
+          <div className='form-group'>
+            <label>
+             UniqueNo:
+              <input type='text' name='uniqueno' onChange={handleInputChange} />
             </label>
           </div>
             <div className='form-group'>

@@ -5,7 +5,10 @@ import './UploadForm.css';
 function UploadForm() {
   const [selectedLenders, setSelectedLenders] = useState([]);
   const [selectedLenders1, setSelectedLenders1] = useState([]);
+  const [selectedLenders2, setSelectedLenders2] = useState([]);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
 
   const [formData, setFormData] = useState({
     dateOfLogin: '',
@@ -37,6 +40,8 @@ function UploadForm() {
     remarks: ''
   });
 
+  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let updatedValue = value;
@@ -53,113 +58,166 @@ function UploadForm() {
 
     setFormData({ ...formData, [name]: updatedValue });
 
+
     // Fetch employee name based on selected employee ID
     const employeeNames = {
-      'F2-369-001': 'CUSTOMER',
-      'F2-369-101': 'NEHA SINGH',
-      'F2-369-173': 'ANSHIKA KHOLI',
-      'F2-369-175': 'ROSHAN YADAV',
-      'F2-369-188': 'JOLLY KUMARI',
-      'F2-369-189': 'MUSKAN JAISWAL',
-      'F2-369-190': 'ADITI SINGHAL',
-      'F2-369-191': 'RANI KUMARI',
-      'F2-369-192': 'AMBAR RAJ JAISWAL',
-      'F2-369-193': 'ADARSH THAKUR',
-      'F2-369-199': 'ANKUSH SHARMA',
-      'F2-369-210': 'MANISHA CHAUHAN',
-      'F2-369-224': 'MAMTA KANOJIA',
-      'F2-369-225': 'SURAJ KUMAR',
-      'F2-369-226': 'SAGAR CHAUHAN',
-      'F2-369-003': 'SHASHANK SHARMA',
-      'F2-369-004': 'JIYA SINGH RAJPUT',
-      'F2-369-005': 'RAJKUMARI',
-      'F2-369-006': 'SHIVANI KASHYAP',
-      'F2-369-008': 'MANOJ KUMAR',
-      'F2-369-009': 'MANISHA SAXENA',
-      'F2-369-010': 'AKANSHA BHARTI',
-      'F2-369-018': 'BARKHA SINGH',
-      'F2-369-019': 'FURKAN JUNG',
-      'F2-369-020': 'PRAGATI SAXENA',
-      'F2-369-021': 'UJALA RISHIWAL',
-      'F2-369-023': 'JAI SINGH',
-      'F2-369-024': 'SHARDA KUSHWAH',
-      'F2-369-025': 'KRISHNA THAKUR',
-      'F2-369-026': 'NEHA LAKRA',
-      'F2-369-045': 'HIMANSHI SINGH',
-      'F2-369-056': 'TARUN DHEEMAN',
-      'F2-369-077': 'SHUBHAM PAHTAK',
-      'F2-369-079': 'ANURANDHAN KUMAR',
-      'F2-369-083': 'PRASHANT KUMAR',
-      'F2-369-085': 'ADITYA RAWAL',
-      'F2-369-106': 'RIYA CHADDHA',
-      'F2-369-107': 'VINEET TIWARI',
-      'F2-369-118': 'PRADEEP KUMAR',
-      'F2-369-120': 'MANSI PORWAL',
-      'F2-369-122': 'NEHA DANISH',
-      'F2-369-130': 'ROZI PRAVEEN',
-      'F2-369-132': 'LAKHVINDER SINGH',
-      'F2-369-133': 'KAJAL KASHYAP',
-      'F2-369-135': 'RASHI GANGWAR',
-      'F2-369-136': 'KRISHNA PANDEY',
-      'F2-369-138': 'ANIT SINHA',
-      'F2-369-145': 'PRERNA THAKUR',
-      'F2-369-148': 'ADITYACHAUHAN',
-      'F2-369-149': 'NISHA CHAUHAN',
-      'F2-369-150': 'SANIA IRSHAD',
-      'F2-369-152': 'ABHISHEK TRIVEDI',
-      'F2-369-155': 'RENU MATHUR',
-      'F2-369-157': 'TANNU YADAV',
-      'F2-369-159': 'SHWETA RAJPUT',
-      'F2-369-166': 'HIMANSHI SINGH',
-      'F2-369-167': 'RITU ANURAGI',
-      'F2-369-168': 'AMIR ALAM',
-      'F2-369-172': 'PALAK MITTAL',
-      'F2-369-183': 'ANURAG SHARMA',
-      'F2-369-196': 'SHIVANGI KASHYAP',
-      'F2-369-197': 'HARSH TYAGI',
-      'F2-369-200': 'NOOR UL HUDA',
-      'F2-369-201': 'TUBA KHAN',
-      'F2-369-202': 'AADI SONI',
-      'F2-369-205': 'ANKIT PAL',
-      'F2-369-208': 'PRIYANSHU PAL',
-      'F2-369-209': 'SHIVAM KUMAR',
-      'F2-369-215': 'CHANCHAL PRAJAPATI',
-      'F2-369-218': 'VISHAL',
-      'F2-369-219': 'RITIKA SINGHAL',
-      'F2-369-220': 'ROHIT CHAUHAN',
-      'F2-369-222': 'IRAM KHAN',
-      'F2-369-223': 'MANSIKASHYAP',
-      'INT-369-034': 'ANKITA KUNDU',
-      'INT-369-021': 'AYESHKANTA MOHAPATRA',
-      'INT-369-024': 'JASHANPREET',
-      'INT-369-029': 'KHUSHI BAJORIA',
-      'INT-369-028': 'MANIK RANA',
-      'INT-369-032': 'PRANAV ACHARYA',
-      'INT-369-023': 'RAHUL SAHA',
-      'INT-369-022': 'SIDDHART',
-      'INT-369-030': 'SIDDHI SINGH',
-      'INT-369-033': 'SNEHAL SHARMA',
-      'INT-369-035': 'VIKRANT CHOUDHARY',
-    };
-    
+      'F2-369-001': 'HARPREET SINGH',
+'F2-369-002': 'ABHINAV AWAL',
+'F2-369-101': 'NEHA SINGH',
+'F2-369-173': 'ANSHIKA KHOLI',
+'F2-369-175': 'ROSHAN YADAV',
+'F2-369-188': 'JOLLY KUMARI',
+'F2-369-189': 'MUSKAN JAISWAL',
+'F2-369-190': 'ADITI SINGHAL',
+'F2-369-191': 'RANI KUMARI',
+'F2-369-192': 'AMBAR RAJ JAISWAL',
+'F2-369-193': 'ADARSH THAKUR',
+'F2-369-199': 'ANKUSH SHARMA',
+'F2-369-210': 'MANISHA CHAUHAN',
+'F2-369-224': 'MAMTA KANOJIA',
+'F2-369-225': 'SURAJ KUMAR',
+'F2-369-226': 'SAGAR CHAUHAN',
+'F2-369-003': 'SHASHANK SHARMA',
+'F2-369-004': 'JIYA SINGH RAJPUT',
+'F2-369-005': 'RAJKUMARI',
+'F2-369-006': 'SHIVANI KASHYAP',
+'F2-369-008': 'MANOJ KUMAR',
+'F2-369-009': 'MANISHA SAXENA',
+'F2-369-010': 'AKANSHA BHARTI',
+'F2-369-018': 'BARKHA SINGH',
+'F2-369-019': 'FURKAN JUNG',
+'F2-369-020': 'PRAGATI SAXENA',
+'F2-369-021': 'UJALA RISHIWAL',
+'F2-369-023': 'JAI SINGH',
+'F2-369-024': 'SHARDA KUSHWAH',
+'F2-369-025': 'KRISHNA THAKUR',
+'F2-369-026': 'NEHA LAKRA',
+'F2-369-045': 'HIMANSHI SINGH',
+'F2-369-056': 'TARUN DHEEMAN',
+'F2-369-077': 'SHUBHAM PAHTAK',
+'F2-369-079': 'ANURANDHAN KUMAR',
+'F2-369-083': 'PRASHANT KUMAR',
+'F2-369-085': 'ADITYA RAWAL',
+'F2-369-106': 'RIYA CHADDHA',
+'F2-369-107': 'VINEET TIWARI',
+'F2-369-118': 'PRADEEP KUMAR',
+'F2-369-120': 'MANSI PORWAL',
+'F2-369-122': 'NEHA DANISH',
+'F2-369-130': 'ROZI PRAVEEN',
+'F2-369-132': 'LAKHVINDER SINGH',
+'F2-369-133': 'KAJAL KASHYAP',
+'F2-369-135': 'RASHI GANGWAR',
+'F2-369-136': 'KRISHNA PANDEY',
+'F2-369-138': 'ANIT SINHA',
+'F2-369-145': 'PRERNA THAKUR',
+'F2-369-148': 'ADITYACHAUHAN',
+'F2-369-149': 'NISHA CHAUHAN',
+'F2-369-150': 'SANIA IRSHAD',
+'F2-369-152': 'ABHISHEK TRIVEDI',
+'F2-369-155': 'RENU MATHUR',
+'F2-369-157': 'TANNU YADAV',
+'F2-369-159': 'SHWETA RAJPUT',
+'F2-369-166': 'HIMANSHI SINGH',
+'F2-369-167': 'RITU ANURAGI',
+'F2-369-168': 'AMIR ALAM',
+'F2-369-172': 'PALAK MITTAL',
+'F2-369-183': 'ANURAG SHARMA',
+'F2-369-196': 'SHIVANGI KASHYAP',
+'F2-369-197': 'HARSH TYAGI',
+'F2-369-200': 'NOOR UL HUDA',
+'F2-369-201': 'TUBA KHAN',
+'F2-369-202': 'AADI SONI',
+'F2-369-205': 'ANKIT PAL',
+'F2-369-208': 'PRIYANSHU PAL',
+'F2-369-209': 'SHIVAM KUMAR',
+'F2-369-215': 'CHANCHAL PRAJAPATI',
+'F2-369-218': 'VISHAL',
+'F2-369-219': 'RITIKA SINGHAL',
+'F2-369-220': 'ROHIT CHAUHAN',
+'F2-369-222': 'IRAM KHAN',
+'F2-369-223': 'MANSIKASHYAP',
 
-    if (name === 'employeeIdOfCaseOwner') {
-      // Allow manual input for 'CUSTOMER', 'CHANNEL PARTNER', and 'SOURCER'
-      if (['CUSTOMER', 'CHANNEL PARTNER', 'SOURCER','INTERN'].includes(value)) {
-        // Clear the employeeName field so that it can be manually filled
-        setFormData((prevData) => ({
-          ...prevData,
-          employeeName: '',
-        }));
-      } else {
-        // For other cases, populate employeeName automatically
-        setFormData((prevData) => ({
-          ...prevData,
-          employeeName: employeeNames[value] || '',
-        }));
-      }
+'F2-369-228': 'AKSHIT VIJAY WARGIYA',
+'F2-369-233': 'DISHA',
+'F2-369-229': 'DAKSH SINGH',
+'F2-369-230': 'DIVYANSH SINGHAL',
+'F2-369-231': 'HARSH BHARDWAJ',
+'F2-369-232': 'SURYA PRATAP',
+
+'INT-369-034': 'ANKITA KUNDU',
+'INT-369-021': 'AYESHKANTA MOHAPATRA',
+'INT-369-025': 'ANURAG NAYAK',
+'INT-369-026': 'AWNISH',
+'INT-369-039': 'ARYAMAN NAHAR',
+'INT-369-037': 'ABDUL AZHAR',
+'INT-369-024': 'JASHANPREET',
+'INT-369-029': 'KHUSHI BAJORIA',
+'INT-369-036': 'MANIK RANA',
+'INT-369-028': 'NAVROOP KAUR',
+'INT-369-032': 'PRANAV ACHARYA',
+'INT-369-023': 'RAHUL SAHA',
+'INT-369-022': 'SIDDARTH L',
+'INT-369-030': 'SIDDHI SINGH',
+'INT-369-038': 'SNEHAL',
+'INT-369-027': 'SANAD',
+'INT-369-035': 'VIKRANT CHOUDHARY',  
+// sourcer id
+'F3-369-003': 'SOURAV',
+'F3-369-004': 'MANAS',
+'F3-369-005': 'SHRISHTI TOMAR',
+'F3-369-006': 'MUSKAN',
+'F3-369-007': 'PRADEEP',
+'F3-369-008': 'JYOTI',
+'F3-369-009': 'SONU',
+'F3-369-010': 'NEHA',
+'F3-369-011': 'SHAMREEN',
+'F3-369-012': 'SHAZIL',
+'F3-369-013': 'PRIYA SHARMA',
+'F3-369-014': 'AMAN',
+'F3-369-015': 'SHIKHA',
+'F3-369-016': 'SALONI',
+'F3-369-017': 'ABHISHEK',
+'F3-369-018': 'KAPIL',
+'F2369-019': 'PRIYA SHARMA'
+
+    };
+
+     if (name === 'employeeIdOfCaseOwner') {
+    // Allow manual input for 'CUSTOMER', 'CHANNEL PARTNER', and 'SOURCER'
+    if (['CUSTOMER', 'CHANNEL PARTNER', 'SOURCER','INTERN'].includes(value)) {
+      // Clear the employeeName field so that it can be manually filled
+      setFormData((prevData) => ({
+        ...prevData,
+        employeeName: '',
+      }));
+    } else {
+      // For other cases, populate employeeName automatically
+      setFormData((prevData) => ({
+        ...prevData,
+        employeeName: employeeNames[value] || '',
+      }));
     }
-  };
+  }
+};
+
+// Get current date in "YYYY-MM-DD" format
+const getCurrentDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  let day = now.getDate();
+
+  // Add leading zeros if month or day is less than 10
+  month = month < 10 ? `0${month}` : month;
+  day = day < 10 ? `0${day}` : day;
+
+  return `${year}-${month}-${day}`;
+};
+// Prevent typing in the input field
+const preventTyping = (e) => {
+  e.preventDefault();
+};
+   
   const [files, setFiles] = useState({
     aadhar: null,
     pan: null,
@@ -187,60 +245,89 @@ const handleRemoveFile = (index) => {
 };
   
   
-  const handleLenderChange = (event) => {
-    const selectedLender = event.target.value;
-    if (event.target.checked) {
-      setSelectedLenders((prevSelected) => [...prevSelected, selectedLender]);
-    } else {
-      setSelectedLenders((prevSelected) =>
-        prevSelected.filter((lender) => lender !== selectedLender)
-      );
-    }
-    setFormData({ ...formData, toBeLoggedInFromWhichLender: selectedLender });
-  };
-  const handleLenderChange1 = (event) => {
-    const selectedLender = event.target.value;
-    if (event.target.checked) {
-      setSelectedLenders1(prevSelected => [...prevSelected, selectedLender]);
-    } else {
-      setSelectedLenders1(prevSelected => prevSelected.filter(lender => lender !== selectedLender));
-    }
-    setFormData({ ...formData, toBeLoggedInFromWhichLender: selectedLender });
-  };
+const handleLenderChange = (event) => {
+  const selectedLender = event.target.value;
+  const isChecked = event.target.checked;
+  if (isChecked) {
+    setSelectedLenders((prevSelected) => [...prevSelected, selectedLender]);
+  } else {
+    setSelectedLenders((prevSelected) =>
+      prevSelected.filter((lender) => lender !== selectedLender)
+    );
+  }
+  setFormData({ ...formData, toBeLoggedInFromWhichLender: selectedLender });
+};
+
+const handleLenderChange1 = (event) => {
+  const selectedLender = event.target.value;
+  const isChecked = event.target.checked;
+  if (isChecked) {
+    setSelectedLenders1((prevSelected) => [...prevSelected, selectedLender]);
+  } else {
+    setSelectedLenders1((prevSelected) =>
+      prevSelected.filter((lender) => lender !== selectedLender)
+    );
+  }
+  setFormData({ ...formData, toBeLoggedInFromWhichLender: selectedLender });
+};
+
+const handleLenderChange2 = (event) => {
+  const selectedLender = event.target.value;
+  const isChecked = event.target.checked;
+  if (isChecked) {
+    setSelectedLenders2((prevSelected) => [...prevSelected, selectedLender]);
+  } else {
+    setSelectedLenders2((prevSelected) =>
+      prevSelected.filter((lender) => lender !== selectedLender)
+    );
+  }
+  setFormData({ ...formData, toBeLoggedInFromWhichLender: selectedLender });
+};
   
   
   const lenderOptions = [
-    'Aditya Birla',
-    'Axis Bank',
-    'Bajaj Finance',
-    'Bajaj Market',
-    'Bajaj salpl',
-    'Chola Mandalam',
-    'Finnable',
-    'HDFC',
-    'Hero FinCorp',
-    'ICICI Bank',
-    'Kotak Mahindra Bank',
-    'Paysense',
-    'Tata Capital',
-];
-
-const lenderOptions1 = [
-    'Federal Bank',
+    'ADITYA BIRLA',
+    'AXIS BANK',
+    'BAJAJ FINANCE',
+    'BAJAJ MARKET',
+    'BAJAJ SALPL',
+    'CHOLA MANDALAM',
+    'FEDERAL BANK',
+    
+  ];
+  
+  const lenderOptions1 = [
+    'FINNABLE',
     'FULLERTON',
-    'Godrej',
-    'ICICI Education Loan',
-    'Incred',
-    'Indusind',
-    'L&T',
-    'Others',
-    'Upward',
-    'Yes Bank',
-];
-
+     'GODREJ',
+     'HDFC',
+     'HERO FINCORP',
+    'ICICI BANK',
+     'ICICI EDUCATION LOAN',
+     'INCRED',
+     'INDUSIND',
+  ];
+  
+  const lenderOptions2 = [
+    'KOTAK MAHINDRA BANK',
+     'L&T',
+     'LENDING KART',
+      'PAYSENSE',
+      'TATA CAPITAL',
+      'UPWARD',
+      'YES BANK',
+  ];
+  
   
 
   const handleUpload = async () => {
+    const allSelectedLenders = [
+      ...selectedLenders,
+      ...selectedLenders1,
+      ...selectedLenders2,
+    ];
+    setFormData({ ...formData, selectedLenders: allSelectedLenders });
+
     if (
     !formData.dateOfLogin ||
     !formData.employeeName ||
@@ -260,15 +347,15 @@ const lenderOptions1 = [
     !formData.state ||
     !formData.city ||
     !formData.requiredLoanType ||
-    !formData.requiredLoanAmount
-  ) {
-    setMessage('Please fill out all required fields Except latest cibil score.');
-    setTimeout(() => {
+    !formData.requiredLoanAmount ||
+    allSelectedLenders.length === 0
+    ) {
+      setWarning('Please fill out all required fields excepts latest cibil score and select at least one lender.');
+      setTimeout(() => {
         setMessage('');
-    }, 5000); // 5 seconds delay
-    return;
-  }
-
+      }, 5000);
+      return;
+    }
 
     const data = new FormData();
     data.append('dateOfLogin', formData.dateOfLogin);
@@ -296,7 +383,7 @@ const lenderOptions1 = [
     data.append('requiredLoanAmount', formData.requiredLoanAmount);
     data.append('latestCIBILScore', formData.latestCIBILScore);
     data.append('bankingPassAndOtherDocPass', formData.bankingPassAndOtherDocPass);
-    data.append('toBeLoggedInFromWhichLender', formData.toBeLoggedInFromWhichLender);
+    data.append('toBeLoggedInFromWhichLender', allSelectedLenders.join(', '));
     data.append('remarks', formData.remarks);
 
     if (formData.adharCard && formData.adharCard.length) {
@@ -328,7 +415,7 @@ const lenderOptions1 = [
     // If there's an error during the upload, log the error
     console.error('Error uploading data and files:', error);
     // You may also set an error message here if you want
-    setMessage('Failed to upload data and files. Please try again.');
+    setError('Failed to upload data and files. Please try again.');
   }
   };
   // Generate employeeIdOfCaseOwner values from F2-369-001 to F2-369-400
@@ -346,7 +433,15 @@ const lenderOptions1 = [
 'INT-369-041', 'INT-369-042', 'INT-369-043', 'INT-369-044', 'INT-369-045',
 'INT-369-046', 'INT-369-047', 'INT-369-048', 'INT-369-049', 'INT-369-050'
   ];
-  const allEmployeeIds = [...employeeIds, ...additionalIds];
+
+  // sourcer id
+  const sourcerId = [
+    'F3-369-003', 'F3-369-004', 'F3-369-005', 'F3-369-006', 'F3-369-007', 
+'F3-369-008', 'F3-369-009', 'F3-369-010', 'F3-369-011', 'F3-369-012',
+'F3-369-013', 'F3-369-014', 'F3-369-015', 'F3-369-016', 'F3-369-017',
+'F3-369-018', 'F3-369-019',
+  ]
+  const allEmployeeIds = [...employeeIds, ...sourcerId, ...additionalIds];
 
   return (
     <>
@@ -354,17 +449,21 @@ const lenderOptions1 = [
       <h1 className="form-title">Case Login Form</h1>
       <form className="loanApplicationForm">
      
-        <div className="column">
-          <div className="form-group">
-            <label>
-              Date Of Login:
-              <input
-                type="date"
-                name="dateOfLogin"
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
+      <div className="column">
+      <div className="form-group">
+        <label>
+          Date Of Login:
+          <input
+            type="date"
+            name="dateOfLogin"
+            value={formData.dateOfLogin}
+            min={getCurrentDate()} // Set minimum date to current date
+            max={getCurrentDate()} // Set maximum date to current date
+            onChange={handleInputChange}
+            onKeyDown={preventTyping} // Prevent typing in the input field
+          />
+        </label>
+      </div>
 
           <div className="form-group">
             <label>
@@ -377,8 +476,8 @@ const lenderOptions1 = [
                   <option value="">Choose Employee ID</option>
                 <option value="CUSTOMER">CUSTOMER</option>
                 <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
-                <option value="SOURCER">SOURCER</option>
                 <option value="INTERN">INTERN</option>
+                  <option value="SOURCER">SOURCER</option>
                 {allEmployeeIds.map((id) => (
                   <option key={id} value={id}>{id}</option>
                 ))}
@@ -414,7 +513,6 @@ const lenderOptions1 = [
       <option value="SOURCER">SOURCER</option>
       <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
       <option value="CUSTOMER">CUSTOMER</option>
-      <option value="INTERN">INTERN</option>
     </select>
   </label>
 </div>
@@ -424,21 +522,22 @@ const lenderOptions1 = [
           <label>
             Manager Name:
             <select name="managerName" required onChange={handleInputChange}>
-              <option value="">Select Manager Name</option>
-              <option value="TARUN DHIMAN">TARUN DHIMAN</option>
-              <option value="SHASHANK SHARMA">SHASHANK SHARMA</option>
-              <option value="ABHINAV AWAL">ABHINAV AWAL</option>
-              <option value="HARPREET SINGH">HARPREET SINGH</option>
-              <option value="PRADEEP KUMAR">PRADEEP KUMAR</option>
-              <option value="ROZI">ROZI</option>
-              <option value="DEEPANSHU">DEEPANSHU</option>
-              <option value="NEHA LAKRA">NEHA LAKRA</option>
-              <option value="PARSANT KUMAR">PARSANT KUMAR</option>
-              <option value="RAJKUMARI">RAJKUMARI</option>
-              <option value="SHUBHAM">SHUBHAM</option>
-              <option value="SHIVANI">SHIVANI</option>
-              <option value="JIYA">JIYA</option>
-              <option value="F2-FINTECH">F2-FINTECH</option>
+           <option value="">Select Manager Name</option>
+          <option value="ABHINAV AWAL">ABHINAV AWAL</option>
+          <option value="DEEPANSHU">DEEPANSHU</option>
+          <option value="F2-FINTECH">F2-FINTECH</option>
+          <option value="HARPREET SINGH">HARPREET SINGH</option>
+          <option value="JIYA">JIYA</option>
+          <option value="NEHA LAKRA">NEHA LAKRA</option>
+          <option value="PARSANT KUMAR">PRASHANT KUMAR</option>
+          <option value="PRADEEP KUMAR">PRADEEP KUMAR</option>
+          <option value="RAJKUMARI">RAJKUMARI</option>
+          <option value="ROZI">ROZI</option>
+          <option value="SHASHANK SHARMA">SHASHANK SHARMA</option>
+          <option value="SHIVANI">SHIVANI</option>
+          <option value="SHUBHAM">SHUBHAM</option>
+          <option value="TARUN DHIMAN">TARUN DHIMAN</option>
+
               {/* Add more options as needed */}
             </select>
           </label>
@@ -472,11 +571,12 @@ const lenderOptions1 = [
               required
               onChange={handleInputChange}
             >
-              <option value="">Select Branch</option>
-              <option value="NOIDA">NOIDA</option>
-              <option value="JHANDEWALAN">JHANDEWALAN</option>
-              <option value="BAREILLY">BAREILLY</option>
-              <option value="F2-FINTECH">F2-FINTECH</option>
+                  <option value="">Select Branch</option>
+                  <option value="BAREILLY">BAREILLY</option>
+                  <option value="F2-FINTECH">F2-FINTECH</option>
+                  <option value="JHANDEWALAN">JHANDEWALAN</option>
+                  <option value="NOIDA">NOIDA</option>
+      
             </select>
           </label>
         </div>
@@ -524,14 +624,15 @@ const lenderOptions1 = [
       
     >
       <option value="">Select Occupation</option>
+     <option value="CORPORATE">CORPORATE</option>
       <option value="PROFESSIONAL">PROFESSIONAL</option>
       <option value="SALARIED">SALARIED</option>
-      <option value="CORPORATE">CORPORATE</option>
+     
       <option value="SELF-EMPLOYED">SELF-EMPLOYED</option>
       <option value="OTHER">OTHER</option>
     </select>
   </label>
-</div>
+ </div>
 
           <div className="form-group">
             <label>
@@ -675,22 +776,23 @@ const lenderOptions1 = [
               onChange={handleInputChange}
             >
               <optgroup label="Unsecured Loans">
-              <option value="">Choose Any Of One</option>
-                <option value="PROFESSIONAL LOAN">PROFESSIONAL LOAN (Doctor/CA/CS,CWA)</option>
-                <option value="PERSONAL LOAN">PERSONAL LOAN</option>
-                <option value="HOME LOAN">HOME LOAN</option>
+                    <option value="">Choose Any Of One</option>
+                    <option value="AUTO LOAN">AUTO LOAN</option>
+                    <option value="HOME LOAN">HOME LOAN</option>
                 <option value="EDUCATIONAL LOAN">EDUCATIONAL LOAN</option>
                 <option value="EQUIPMENT LOAN/MACHINERY LOAN">EQUIPMENT LOAN/MACHINERY LOAN</option>
-                <option value="AUTO LOAN">AUTO LOAN</option>
+                    <option value="PERSONAL LOAN">PERSONAL LOAN</option>
+                <option value="PROFESSIONAL LOAN">PROFESSIONAL LOAN (Doctor/CA/CS,CWA)</option>
               </optgroup>
               <optgroup label="Secured Loans">
                 <option value="Housing Loan Salaried<">Housing Loan Salaried</option>
                 <option value="Housing Loan Business Loan">Housing Loan Business Loan</option>
+                <option value="Education Loan India">Education Loan India</option>
+                <option value="Education Loan Foreign">Education Loan Foreign</option>
                 <option value="LAP Salaried">LAP Salaried</option>
                 <option value="LAP Businessmant">LAP Businessman</option>
                 <option value="LAP Professional">LAP Professional</option>
-                <option value="Education Loan India">Education Loan India</option>
-                <option value="Education Loan Foreign">Education Loan Foreign</option>
+               
               </optgroup>
             </select>
           </label>
@@ -702,6 +804,7 @@ const lenderOptions1 = [
               Required Loan Amount:
               {/* <select> */}
               <input
+              placeholder='Please fill only Numeric'
                 type="text"
                 name="requiredLoanAmount"
                 required
@@ -749,8 +852,8 @@ const lenderOptions1 = [
           <input
            type="checkbox"
             id={`lender-${index}`}
-        value={lender.toLowerCase()}
-        checked={selectedLenders.includes(lender.toLowerCase())}
+        value={lender.toUpperCase()}
+        checked={selectedLenders.includes(lender.toUpperCase())}
         onChange={handleLenderChange}
       />
       <label htmlFor={`lender-${index}`}>{lender}</label>
@@ -767,11 +870,29 @@ const lenderOptions1 = [
        <input
         type="checkbox"
         id={`lender1-${index}`}
-        value={lender1.toLowerCase()}
-        checked={selectedLenders1.includes(lender1.toLowerCase())}
+        value={lender1.toUpperCase()}
+        checked={selectedLenders1.includes(lender1.toUpperCase())}
         onChange={handleLenderChange1}
       />
       <label htmlFor={`lender1-${index}`}>{lender1}
+      </label>
+                </div>
+              ))}
+            </div>
+            </div>
+            <div className="form-group checkbox-group">
+         <div className='checkbox-options'>
+         {lenderOptions2.map((lender2, index) => (
+  
+        <div key={index} className={`checkbox-option ${index % 6 === 0 ? "new-row" : ""}`}>
+       <input
+        type="checkbox"
+        id={`lender2-${index}`}
+        value={lender2.toUpperCase()}
+        checked={selectedLenders1.includes(lender2.toUpperCase())}
+        onChange={handleLenderChange1}
+      />
+      <label htmlFor={`lender2-${index}`}>{lender2}
       </label>
                 </div>
               ))}
@@ -793,7 +914,9 @@ const lenderOptions1 = [
         </div>
         <button className="submit-btn" onClick={handleUpload}>Submit</button>
       </form>
-      {message && <div className="message">{message}</div>} 
+      {message && <div className="set-message">{message}</div>}
+      {error && <div className="error">{error}</div>} 
+      {warning && <div className="warning">{warning}</div>} 
       </div>
     </>
   );

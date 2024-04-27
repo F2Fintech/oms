@@ -326,123 +326,153 @@ const handleDownloadAllData = async () => {
     return totalCalculatedSal;
   };
 
-  // Filter based on Employee name
-  const handleFilterByEmployeeName = () => {
-  const employeeName = prompt("Enter Employee Name to filter:");
-  if (employeeName !== null && employeeName !== '') {
-    // Find all customer PAN numbers associated with the given managerName
-    const customerPANs = data.filter(item => item.employeeName === employeeName)
-                              .map(item => item.customerPan);
+  // Filter code start from here
 
-    // Filter main data based on the identified customer PAN numbers
-    const filteredData = data.filter(item => customerPANs.includes(item.customerPan));
-
-    // Filter ops data based on matching customer PAN numbers
-    const filteredOpsData = opsData.filter(item => customerPANs.includes(item.customerPan));
-
-    // Set filtered data to your UI
-    setData(filteredData);
-    setOpsData(filteredOpsData); // Assuming you have a method to set opsData in your UI state
-  } else {
-    // If no manager name is provided, reset the filter
-    setData(data);
-    setOpsData(opsData); // Reset opsData to its original state
-  }
-};
-
-const handleFilterByManagerName = () => {
-  const managerName = prompt("Enter manager's name to filter:");
-  if (managerName !== null && managerName !== '') {
-    // Find all customer PAN numbers associated with the given managerName
-    const customerPANs = data.filter(item => item.managerName === managerName)
-                              .map(item => item.customerPan);
-
-    // Filter main data based on the identified customer PAN numbers
-    const filteredData = data.filter(item => customerPANs.includes(item.customerPan));
-
-    // Filter ops data based on matching customer PAN numbers
-    const filteredOpsData = opsData.filter(item => customerPANs.includes(item.customerPan));
-
-    // Set filtered data to your UI
-    setData(filteredData);
-    setOpsData(filteredOpsData); // Assuming you have a method to set opsData in your UI state
-  } else {
-    // If no manager name is provided, reset the filter
-    setData(data);
-    setOpsData(opsData); // Reset opsData to its original state
-  }
-};
-
-// Filter by Customer pan
-const handleFilterByCustomerPan = () => {
-  const customerPan = prompt("Enter customer pan to filter:");
-  if (customerPan !== null && customerPan !== '') {
-    // Find all customer PAN numbers associated with the given managerName
-    const customerPANs = data.filter(item => item.customerPan === customerPan)
-                              .map(item => item.customerPan);
-
-    // Filter main data based on the identified customer PAN numbers
-    const filteredData = data.filter(item => customerPANs.includes(item.customerPan));
-
-    // Filter ops data based on matching customer PAN numbers
-    const filteredOpsData = opsData.filter(item => customerPANs.includes(item.customerPan));
-
-    // Set filtered data to your UI
-    setData(filteredData);
-    setOpsData(filteredOpsData); // Assuming you have a method to set opsData in your UI state
-  } else {
-    // If no manager name is provided, reset the filter
-    setData(data);
-    setOpsData(opsData); // Reset opsData to its original state
-  }
-};
-
-// Filter by POC NAME
+  // filter by sale date of login
+  const handleFilterBySalesDateOfLogin = () => {
+    const dateOfLogin = prompt("Enter sales date of login:");
+    if (!dateOfLogin) return resetFilters();
+  
+    const lowerCaseDateOfLogin = dateOfLogin.toLowerCase();
+    applyFilters(item => item.dateOfLogin.toLowerCase().includes(lowerCaseDateOfLogin));
+    };
+    
+    // filter by emp id
+    const handleFilterByEmpIdOfCaseOwner = () => {
+    const empId = prompt("Enter Employee Id:");
+    if (!empId) return resetFilters();
+  
+    const lowerCaseEmpId = empId.toLowerCase();
+    applyFilters(item => item.employeeIdOfCaseOwner.toLowerCase().includes(lowerCaseEmpId));
+    };
+    
+  
+    // filter by employee name
+    const handleFilterByEmployeeName = () => {
+    const employeeName = prompt("Enter Employee Name to filter:");
+    if (!employeeName) return resetFilters();
+  
+    const lowerCaseEmployeeName = employeeName.toLowerCase();
+    applyFilters(item => item.employeeName.toLowerCase().includes(lowerCaseEmployeeName));
+  };
+  
+    // filter by manager name
+  const handleFilterByManagerName = () => {
+    const managerName = prompt("Enter manager's name to filter:");
+    if (!managerName) return resetFilters();
+    
+    const lowerCaseManagerName = managerName.toLowerCase();
+    applyFilters(item => item.managerName.toLowerCase().includes(lowerCaseManagerName));
+    };
+    
+    // filter by customer name
+    const handleFilterByCustomerName = () => {
+    const customerName = prompt("Enter customerName:");
+    if (!customerName) return resetFilters();
+  
+    const lowerCaseCustomerName = customerName.toLowerCase();
+    applyFilters(item => item.customerName.toLowerCase().includes(lowerCaseCustomerName));
+  };
+  
+    // filter by customer pan
+  const handleFilterByCustomerPan = () => {
+    const customerPan = prompt("Enter customer pan to filter:");
+    if (!customerPan) return resetFilters();
+    
+    const lowerCaseCustomerPan = customerPan.toLowerCase();
+    applyFilters(item => item.customerPan.toLowerCase().includes(lowerCaseCustomerPan));
+    };
+    
+  
+    // filter by lender
+    const handleFilterByLender = () => {
+    const lender = prompt("Enter Lender:");
+    if (!lender) return resetFilters();
+    
+    const lowerCaseLender = lender.toLowerCase();
+    applyFilters(item => item.toBeLoggedInFromWhichLender.toLowerCase().includes(lowerCaseLender));
+  };
+  
+    
   const handleFilterByPocName = () => {
-  const pocName = prompt("Enter POC name to filter:");
-  if (pocName !== null && pocName !== '') {
-    // Find all customer PAN numbers associated with the given caseStatus
-    const customerPANs = opsData.filter(item => item.pocName === pocName)
-                                  .map(item => item.customerPan);
+    const pocName = prompt("Enter POC name to filter:");
+    if (!pocName) return resetFilters();
+    
+    const lowerCasePocName = pocName.toLowerCase();
+    applyFilters(item => {
+      const itemPocName = item.pocName ? item.pocName.toLowerCase() : ""; // Convert null or undefined to empty string
+      return itemPocName.includes(lowerCasePocName) || itemPocName === "";
+    }, true);
+  };
+  
+  
+    // filter by login status by ops teams
+    const handleFilterByLoginSatus = () => {
+    const loginStatus = prompt("Enter login status:");
+    if (!loginStatus) return resetFilters();
+    
+    const lowerCaseLoginDoneBy = loginStatus.toLowerCase();
+    applyFilters(item => item.loginStatus.toLowerCase().includes(lowerCaseLoginDoneBy), true);
+  };
+    
+    
+    // filter by login done by
+    const handleFilterLoginDoneBy = () => {
+    const loginDoneBy = prompt("Enter login done by name:");
+    if (!loginDoneBy) return resetFilters();
+    
+    const lowerCaseLoginDoneBy = loginDoneBy.toLowerCase();
+    applyFilters(item => item.loginDoneBy.toLowerCase().includes(lowerCaseLoginDoneBy), true);
+  };
+  
+    
+    // filter by ops login date
+    const handleFilterOpsLogin = () => {
+    const loginDate = prompt("Enter Ops Login date:");
+    if (!loginDate) return resetFilters();
+    
+    const lowerCaseLoginDate = loginDate.toLowerCase();
+    applyFilters(item => item.loginDate.toLowerCase().includes(lowerCaseLoginDate), true);
+  };
+  
+    
+    // fitler by case status
+  const handleFilterByCaseStatus = () => {
+    const caseStatus = prompt("Enter Case Status to filter:");
+    if (!caseStatus) return resetFilters();
+    
+    const lowerCaseCaseStatus = caseStatus.toLowerCase();
+    applyFilters(item => item.caseStatus.toLowerCase().includes(lowerCaseCaseStatus), true);
+  };
+  
 
-    // Filter main data based on the identified customer PAN numbers
-    const filteredData = data.filter(item => customerPANs.includes(item.customerPan));
-
-    // Set filtered data to your UI
-    setData(filteredData);
-
-    // Set ops data to your UI
-    setOpsData(opsData.filter(item => customerPANs.includes(item.customerPan))); 
-    // Assuming you have a method to set opsData in your UI state
-  } else {
-    // If no case status is provided, reset the filter
-    setData(data);
-    setOpsData(opsData); // Reset opsData to its original state
-  }
+  // filter by doc check by by
+  const handleFilterDocCheckBy= () => {
+    const docCheckBy = prompt("Enter doc check by name:");
+    if (!docCheckBy) return resetFilters();
+    
+    const lowerDocCheckBy = docCheckBy.toLowerCase();
+    applyFilters(item => item.docCheckBy.toLowerCase().includes(lowerDocCheckBy), true);
   };
 
-// Filter by case status
-  const handleFilterByCaseStatus = () => {
-  const caseStatus = prompt("Enter Case Status to filter:");
-  if (caseStatus !== null && caseStatus !== '') {
-    // Find all customer PAN numbers associated with the given caseStatus
-    const customerPANs = opsData.filter(item => item.caseStatus === caseStatus)
-                                  .map(item => item.customerPan);
-
-    // Filter main data based on the identified customer PAN numbers
-    const filteredData = data.filter(item => customerPANs.includes(item.customerPan));
-
-    // Set filtered data to your UI
-    setData(filteredData);
-
-    // Set ops data to your UI
-    setOpsData(opsData.filter(item => customerPANs.includes(item.customerPan))); 
-    // Assuming you have a method to set opsData in your UI state
-  } else {
-    // If no case status is provided, reset the filter
+  // filter by tvr done by
+  const handleFilterTvrDoneBy = () => {
+    const tvrDoneBy = prompt("Enter Ops Login date:");
+    if (!tvrDoneBy) return resetFilters();
+    
+    const lowerCaseTvrDoneBy = tvrDoneBy.toLowerCase();
+    applyFilters(item => item.tvrDoneBy.toLowerCase().includes(lowerCaseTvrDoneBy), true);
+  };
+    
+  const applyFilters = (filterFunc, isOpsData = false) => {
+    const filteredIds = (isOpsData ? opsData : data).filter(filterFunc).map(item => item.uniqueno);
+    setData(data.filter(item => filteredIds.includes(item.uniqueno)));
+    setOpsData(opsData.filter(item => filteredIds.includes(item.uniqueno)));
+  };
+  
+  const resetFilters = () => {
     setData(data);
-    setOpsData(opsData); // Reset opsData to its original state
-  }
+    setOpsData(opsData);
   };
     
     
@@ -462,7 +492,7 @@ const handleFilterByCustomerPan = () => {
                     <button onClick={() => navigate('/nisha')}>Nisha Page</button>
                     <button onClick={() => navigate('/furkan')}>Furkan Page</button>
                     <button onClick={() => navigate('/anit')}>Anit Page</button>
-                    <button onClick={() => navigate('/aaditi')}>Aaditi Page</button>
+                    <button onClick={() => navigate('/aaditi')}>Aditi Page</button>
                     <button onClick={() => navigate('/muskan')}>Muskan Page</button>
                     <button onClick={() => navigate('/manoj')}>Manoj Page</button>
                     <button onClick={() => navigate('/anurandhan')}>Anurandhan Page</button>
@@ -479,9 +509,19 @@ const handleFilterByCustomerPan = () => {
           
   <thead>
     
-       <th>SNO</th>
-      <th>Date of Login</th>
-      <th>Employee ID of Case Owner</th>
+  <th>SNO</th>
+                <th>
+                  Date of Login
+                   <button onClick={() => handleFilterBySalesDateOfLogin()}>
+                      <FontAwesomeIcon icon={faFilter} />
+                    </button>
+                </th>
+                <th>
+                  Employee ID of Case Owner
+                  <button onClick={() => handleFilterByEmpIdOfCaseOwner()}>
+                      <FontAwesomeIcon icon={faFilter} />
+                  </button>
+               </th>
      <th>
   Employee Name
   {/* Filter icon */}
@@ -497,7 +537,7 @@ const handleFilterByCustomerPan = () => {
    <FontAwesomeIcon icon={faFilter} />
   </button>
 </th>
-      <th>Customer Name</th>
+                
       <th>Customer DOB</th>
       <th>Branch Name</th>
       <th>Customer Contact</th>
@@ -522,9 +562,23 @@ const handleFilterByCustomerPan = () => {
       <th>Required Loan Amount</th>
       <th>Latest CIBIL Score</th>
       <th>Banking Pass and Other Doc Pass</th>
-      <th>To Be Logged In From Which Lender</th>
-      <th>Remarks</th>
+
+      <th>
+                  Customer Name
+              <button onClick={() => handleFilterByCustomerName()}>
+                <FontAwesomeIcon icon={faFilter} />
+              </button>
+      </th>
+                <th>
+                  Lender      
+                  <button onClick={() => handleFilterByLender()}>
+                        <FontAwesomeIcon icon={faFilter} />
+                  </button>
+                </th>
+                <th>Remarks</th>
+                <th>UniqueNo</th>
                 <th>Documents</th>
+                
                 <th>Edit Sales Data</th>
       <th>
   POC Name
@@ -532,11 +586,29 @@ const handleFilterByCustomerPan = () => {
   <button onClick={() => handleFilterByPocName()}>
    <FontAwesomeIcon icon={faFilter} />
   </button>
-</th>
-       <th>Customer Pan</th>
-      <th>Login Status</th>
-      <th>Login Done By</th>
-      <th>Login Date</th>
+                </th>
+                <th>Ops Unique</th>
+                <th>Customer Pan</th>
+                <th>
+                  Login Status
+                 <button onClick={() => handleFilterByLoginSatus()}>
+                     <FontAwesomeIcon icon={faFilter} />
+                 </button>
+                </th>
+                
+                <th>
+                  Login Done By
+                   <button onClick={() => handleFilterLoginDoneBy()}>
+                         <FontAwesomeIcon icon={faFilter} />
+                  </button>
+
+            </th>
+                <th>
+                  Login Date
+                  <button onClick={() => handleFilterOpsLogin()}>
+                           <FontAwesomeIcon icon={faFilter} />
+                 </button>
+              </th>
       <th>Lead Id</th>
       <th>
   Case Status
@@ -561,9 +633,19 @@ const handleFilterByCustomerPan = () => {
       <th>AssignTo</th>
       {/* <th>Assignee Name</th> */}
       <th>Doc Check Status</th>
-      <th>Doc Check By</th>
+      <th>
+        Doc Check By
+        <button onClick={() => handleFilterDocCheckBy()}>
+   <FontAwesomeIcon icon={faFilter} />
+  </button>
+        </th>
       <th>TVR Status</th>
-      <th>TVR Done By</th>
+      <th>
+                  TVR Done By
+                   <button onClick={() => handleFilterTvrDoneBy()}>
+   <FontAwesomeIcon icon={faFilter} />
+  </button>
+                </th>
       <th>Eligibility Amount</th>
       <th>Eligibility Type</th>
       <th>Eligibility Check By</th>
@@ -578,9 +660,11 @@ const handleFilterByCustomerPan = () => {
      <th>Extra Income</th>
      <th>Total Income</th>
      <th>Credit Suggsested Lender</th>
-      <th>Credit Remarks</th>
+                <th>Credit Remarks</th>
+                
       <th>Edit</th>
-      <th>Delete</th>
+     
+      {/* <th>Delete</th> */}
   </thead>
               <tbody className='t-body'>
                 
@@ -613,8 +697,7 @@ const handleFilterByCustomerPan = () => {
                 return (
                    <tr key={index} className={rowColor} style={{ color: textColor }}>
         <td>{index + 1}</td>
-        <td>
-            {/* Editable input field for dateOfLogin */}
+        {/* <td>
             {editedDataIndex === index ? (
                 <input
                     type="text"
@@ -624,7 +707,10 @@ const handleFilterByCustomerPan = () => {
             ) : (
                 item.dateOfLogin
             )}
-        </td>
+        </td> */}
+        <td>
+    {item.dateOfLogin}
+</td>
         <td>
             {/* Editable input field for employeeIdOfCaseOwner */}
             {editedDataIndex === index ? (
@@ -673,20 +759,9 @@ const handleFilterByCustomerPan = () => {
         item.managerName
     )}
 </td>
+
 <td>
-    {/* Editable input field for customerName */}
-    {editedDataIndex === index ? (
-        <input
-            type="text"
-            value={editedData.customerName}
-            onChange={(e) => handleEditDataChange('customerName', e.target.value)}
-        />
-    ) : (
-        item.customerName
-    )}
-</td>
-<td>
-    {/* Editable input field for dateOfBirth */}
+    
     {editedDataIndex === index ? (
         <input
             type="date"
@@ -902,6 +977,20 @@ const handleFilterByCustomerPan = () => {
         item.bankingPassAndOtherDocPass
     )}
 </td>
+
+
+<td>
+    {/* Editable input field for customerName */}
+    {editedDataIndex === index ? (
+        <input
+            type="text"
+            value={editedData.customerName}
+            onChange={(e) => handleEditDataChange('customerName', e.target.value)}
+        />
+    ) : (
+        item.customerName
+    )}
+</td>
         
         <td>
         {editedDataIndex === index ? (
@@ -925,6 +1014,18 @@ const handleFilterByCustomerPan = () => {
     ) : (
         item.remarks
     )}
+</td>
+<td>
+        {/* {editedDataIndex === index ? (
+        <input
+            type="text"
+            value={editedData.uniqueno}
+            onChange={(e) => handleEditDataChange('uniqueno', e.target.value)}
+        />
+    ) : (
+        item.uniqueno
+    )} */}
+    {item.uniqueno}
 </td>
             <td>
                 {item.files && item.files.length > 0 ? (
@@ -962,6 +1063,18 @@ const handleFilterByCustomerPan = () => {
     </select>
   ) : (
     opsData[index].pocName
+  )}
+</td>
+
+<td>
+  {editIndex === index ? (
+    <input
+      type="text"
+      value={editedOpsData.uniqueno}
+      onChange={(e) => handleEditChange('uniqueno', e.target.value)}
+    />
+  ) : (
+    opsData[index].uniqueno
   )}
 </td>
 
@@ -1297,6 +1410,7 @@ const handleFilterByCustomerPan = () => {
       <option value="TURNOVER">TURNOVER</option>
       <option value="GROSS PROFIT">GROSS PROFIT</option>
       <option value="NET PROFIT">NET PROFIT</option>
+      <option value="SALARY">SALARY</option>
     </select>
   ) : (
     opsData[index].elgibilityType
@@ -1335,6 +1449,12 @@ const handleFilterByCustomerPan = () => {
       <option value="BA">BA</option>
       <option value="DNB">DNB</option>
       <option value="PGDCC">PGDCC</option>
+      <option value="BDMS">BDMS</option>
+      <option value="MDS">MDS</option>
+      <option value="BDS">BDS</option>
+      <option value="DA">DA</option>
+      <option value="DGO">DGO</option>
+      <option value="BAMS">BAMS</option>
       <option value="CA/CS/ICWA">CA/CS/ICWA</option>
     </select>
   ) : (
@@ -1462,9 +1582,9 @@ const handleFilterByCustomerPan = () => {
                     )}
                   </td>
 
-                 <td>
+                 {/* <td>
                             <button className='delete-btn' onClick={() => handleDelete(item._id, opsData[index]._id, index, index)}>Delete</button>
-                        </td>
+                        </td> */}
 
 
                               <td>
@@ -1481,7 +1601,7 @@ const handleFilterByCustomerPan = () => {
             </table>
             </div>
 </div>
-  {/* <button className="download-all-btn" onClick={handleDownloadAllData}>Download All Data</button> */}
+  <button className="download-all-btn" onClick={handleDownloadAllData}>Download All Data</button>
         </div>
        
     );

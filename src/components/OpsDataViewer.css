@@ -341,7 +341,7 @@ td {
   /* Aligns items vertically */
   margin-bottom: 20px;
   /* Optional: adds some space below the header */
-  margin-top: 30px;
+  margin-top: 60px;
 
 }
 
@@ -549,7 +549,7 @@ td {
   display: inline-block;
   font-size: 16px;
   margin: 20px 2px;
-  margin-top: -40px;
+  /* margin-top: -40px; */
 
   cursor: pointer;
   border-radius: 8px;

@@ -12,7 +12,7 @@ const Navbar = () => {
       <div className="navbar-right">
         <ul className="nav-links">
           <li><a href="/">CASE LOGIN</a></li>
-          {/* <li><a href="/record">TRACK EMP RECORD</a></li> */}
+          <li><a href="/record">TRACK EMP RECORD</a></li>
           <li><a href="/rec">UPLOAD TVR RECORDING</a></li>
           <li><a href="/login">OPS TEAMS LOGIN</a></li>
           <li><a href="/opsForm">OPS TEAMS FORM</a></li>

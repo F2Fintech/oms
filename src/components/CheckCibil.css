@@ -1,0 +1,60 @@
+.check-cibil {
+    max-width: 400px;
+    /* margin: 0 auto; */
+    margin-top: 20px;
+    margin-left: 5px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .check-cibil h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .check-cibil form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .check-cibil div {
+    margin-bottom: 15px;
+  }
+  
+  .check-cibil label {
+    font-weight: bold;
+  }
+  
+  .check-cibil input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .check-cibil button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .check-cibil button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .check-cibil pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+  }
+  
+  .check-cibil code {
+    color: green;
+  }
+  
