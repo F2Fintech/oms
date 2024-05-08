@@ -38,7 +38,7 @@ const recordingUpload = multer();
 
 
 // Database connection (MongoDB)
-mongoose.connect("mongodb://localhost:27017/april24-oms")
+mongoose.connect("mongodb://localhost:27017/may24-oms")
 .then((e) => console.log("Mongodb connected"));
 
 
@@ -143,6 +143,9 @@ app.post('/rec', recordingUpload.single('audio'), async (req, res) => {
     case 'wma':
         contentType = 'audio/x-ms-wma';
         break;
+        case 'amr':
+          contentType = 'audio/amr';
+          break;
     // Add more cases for other audio file types if needed
     default:
         contentType = 'application/octet-stream'; // Default to binary data
@@ -1259,6 +1262,7 @@ const userCredentials = {
   'F2-369-101': { password: 'Neh@_Singh_101' },
   'F2-369-173': { password: 'Anshika@Kh0li' },
   'F2-369-175': { password: 'R0sh@nY@d@v' },
+  'F2-369-186': { password: 'A@nuR@Gg681' },
   'F2-369-188': { password: 'Jolly_Kumari123' },
   'F2-369-189': { password: 'Musk@n_J@iSw@l' },
   'F2-369-190': { password: 'AditiS1ngh@l' },
@@ -1271,9 +1275,9 @@ const userCredentials = {
   'F2-369-225': { password: 'Sur@jKum@r!23' },
   'F2-369-226': { password: 'S@g@rC@hu@n123' },
   'F2-369-003': { password: 'Sh@sh@nk_Sh@rm@!23' },
-  'F2-369-004': { password: 'Jiy@SinghR@jput123' },
+  'F2-369-004': { password: 'J!y@@7890' },
   'F2-369-005': { password: 'R@jkum@ri123' },
-  'F2-369-006': { password: 'Shiv@niK@shy@p!23' },
+  'F2-369-006': { password: 'ShiV@niK@shy@P!23' },
   'F2-369-008': { password: 'M@noj_Kum@r_123' },
   'F2-369-009': { password: 'M@nishaS@xen@123' },
   'F2-369-010': { password: 'Ak@nsh@Bh@rti123' },
@@ -1329,6 +1333,13 @@ const userCredentials = {
   'F2-369-220': { password: 'Rohit_C@hu@n123' },
   'F2-369-222': { password: 'Ir@m_Kh@n_123' },
   'F2-369-223': { password: 'M@nsiK@shy@p123' },
+  'F2-369-228': { password: 'AkSh!tV!j@y@822' },
+  'F2-369-229': { password: 'D@kSHs!nGh@92' },
+  'F2-369-230': { password: 'D!V@ynShSi!nGh@L' },
+  'F2-369-231': { password: 'h@rshBh@rDwa@j@231' },
+  'F2-369-232': { password: 'suRy@P@rTapp@232' },
+  'F2-369-233': { password: 'D!isH@233' },
+  'F2-369-234': { password: 'S@m!rudh!N' },
   // for intern
   'INT-369-034': { password: 'Ankit@_Kundu123' },
   'INT-369-021': { password: 'Ayeshk@nt@_Moh@p@tr@123' },
@@ -1367,6 +1378,26 @@ const userCredentials = {
   'F2369-019': { password: 'PriyaSharma901@Pass' }
 };
 
+// Manually created manager credentials
+const managerCredentials = {
+  
+  'ABHINAV AWAL': { password: 'Abhin@v@1234' },
+  'DEEPANSHU': { password: 'Deep@nshu@5678' },
+  'F2-FINTECH': { password: 'F2F!ntech@9012' },
+  'HARPREET SINGH': { password: 'H@rpreet@3456' },
+  'JIYA': { password: 'J!y@@7890' },
+  'NEHA LAKRA': { password: 'NeHaL@kra@123' },
+  'PRASHANT KUMAR': { password: 'Prashant@456' },
+  'PRADEEP KUMAR': { password: 'Pr@dEepKum@r@789' },
+  'RAJKUMARI': { password: 'R@jkum@ri123' },
+  'ROZI': { password: 'Roz!_Pr@veen123' },
+  'SHASHANK SHARMA': { password: 'Sh@sHank@258' },
+  'SHIVANI': { password: 'Sh!vAni@741' },
+  'SHUBHAM': { password: 'SHubh@m@852' },
+  'TARUN DHIMAN': { password: 'TarunDhiman@159' },
+  'GROWTH MANAGER': { password: 'Gr0WtHm@n@Ger@99' },
+  'SURAJ' : { password: 'Sur@J@9u'}
+};
 
 // Middleware function for user authentication
 const authenticateUser = (req, res, next) => {
@@ -1426,6 +1457,122 @@ app.get('/api/records/:employeeIdOfCaseOwner', async (req, res) => {
      res.status(500).json({ error: 'Internal server error' });
    }
  });
+
+
+ // Middleware function for manager authentication
+const authenticateManager = (req, res, next) => {
+  const { managerName, password } = req.body;
+  
+   // Check if provided employee ID exists in user credentials
+   if (!managerCredentials[managerName]) {
+     return res.status(401).json({ error: 'Invalid manager name' });
+   }
+ 
+   // Check if provided username and password match
+   if (managerCredentials[managerName].password === password) {
+     next(); // Proceed to the next middleware
+   } else {
+     return res.status(401).json({ error: 'Invalid credentials' });
+   }
+ };
+ 
+ //API endpoint for manager login
+ app.post('/api/manager/login', authenticateManager, (req, res) => {
+   res.json({ message: 'Manager login successful' });
+ });
+ 
+//  // API endpoint for manager-based record retrieval
+//  app.get('/api/records/manager/:managerName', async (req, res) => {
+//    const { managerName } = req.params;
+ 
+//    try {
+//      const recordsModel1 = await Data.find({ managerName });
+    
+//      // console.log(recordsModel1); // Log recordsModel1 to see if it's retrieved correctly
+//       const uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.uniqueno)));
+//       const recordsModel2 = await OpsData.find({ uniqueno: { $in: uniqueCustomerPans } });
+  
+//       const recordsModel1WithSource = recordsModel1.map(record => ({
+//         ...record.toObject(),
+//         source: 'Data',
+//         model: 'Model1'
+//       }));
+  
+//       const recordsModel2WithSource = recordsModel2.map(record => ({
+//         ...record.toObject(),
+//         source: 'OpsData',
+//         model: 'Model2'
+//       }));
+  
+//       const mergedRecords = [];
+  
+//       recordsModel1WithSource.forEach(record1 => {
+//         const matchingRecord2 = recordsModel2WithSource.find(record2 => record2.uniqueno === record1.uniqueno);
+//         if (matchingRecord2) {
+//           mergedRecords.push({ ...record1, ...matchingRecord2 });
+//         }
+//       });
+  
+//       res.json(mergedRecords);
+//     } catch (error) {
+//       console.error('Error fetching records:', error);
+//       res.status(500).json({ error: 'Internal server error' });
+//     }
+//  });
+
+// API endpoint for manager-based record retrieval
+app.get('/api/records/manager/:managerName', async (req, res) => {
+  const { managerName } = req.params;
+
+  try {
+    let recordsModel1;
+    let uniqueCustomerPans;
+    let recordsModel2;
+
+    // Check if the requesting manager is SHASHANK SHARMA
+    if (managerName === 'SHASHANK SHARMA') {
+      // SHASHANK SHARMA can track SHASHANK SHARMA, JIYA, and SHIVANI managers
+      recordsModel1 = await Data.find({ managerName: { $in: ['SHASHANK SHARMA', 'JIYA', 'SHIVANI'] } });
+      uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.uniqueno)));
+      recordsModel2 = await OpsData.find({ uniqueno: { $in: uniqueCustomerPans } });
+    } else if (managerName === 'GROWTH MANAGER') {
+      recordsModel1 = await Data.find({ managerName: { $in: ['GROWTH MANAGER', 'TARUN DHIMAN', 'RAJKUMARI', 'SHUBHAM', 'SURAJ KUMAR'] } });
+     uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.uniqueno)));
+     recordsModel2 = await OpsData.find({ uniqueno: { $in: uniqueCustomerPans } });
+   } else {
+      // Other managers can only track their own employee records
+      recordsModel1 = await Data.find({ managerName });
+      uniqueCustomerPans = Array.from(new Set(recordsModel1.map(record => record.uniqueno)));
+      recordsModel2 = await OpsData.find({ uniqueno: { $in: uniqueCustomerPans } });
+    }
+
+    const recordsModel1WithSource = recordsModel1.map(record => ({
+      ...record.toObject(),
+      source: 'Data',
+      model: 'Model1'
+    }));
+
+    const recordsModel2WithSource = recordsModel2.map(record => ({
+      ...record.toObject(),
+      source: 'OpsData',
+      model: 'Model2'
+    }));
+
+    const mergedRecords = [];
+    recordsModel1WithSource.forEach(record1 => {
+      const matchingRecord2 = recordsModel2WithSource.find(record2 => record2.uniqueno === record1.uniqueno);
+      if (matchingRecord2) {
+        mergedRecords.push({ ...record1, ...matchingRecord2 });
+      }
+    });
+
+    res.json(mergedRecords);
+  } catch (error) {
+    console.error('Error fetching records:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
  
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

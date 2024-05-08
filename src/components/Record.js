@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import './Record.css';
 
 function Record() {
   const [employeeIdOfCaseOwner, setEmployeeIdOfCaseOwner] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [records, setRecords] = useState([]);
   const [error, setError] = useState('');
-  const [password, setPassword] = useState('');
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     // Fetch records only if a user is logged in
@@ -26,28 +28,17 @@ function Record() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleUserLogin = async (e) => {
     e.preventDefault();
     try {
-      if (!employeeIdOfCaseOwner) {
-        setError('Please choose an Employee ID.');
-        return;
-      }
-
-      if (!password) {
-        setError('Please provide a password.');
-        return;
-      }
-
-      const response = await axios.post(`http://13.232.127.73:5000/api/login`, {
+      const response = await axios.post('http://13.232.127.73:5000/api/login', {
         employeeIdOfCaseOwner,
-        password
+        password: userPassword
       });
-
       setLoggedInUser(employeeIdOfCaseOwner);
     } catch (error) {
       setError('Invalid employee ID or password');
-      console.error('Error fetching records:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -55,58 +46,16 @@ function Record() {
     setEmployeeIdOfCaseOwner(e.target.value);
   };
 
-  const generateEmployeeIdOptions = () => {
-    const options = [];
-    
-    // Add roles (CHANNEL PARTNER, SOURCER, INTERN)
-    const roles = ['CHANNEL PARTNER', 'SOURCER', 'INTERN'];
-    roles.forEach(role => {
-      options.push(
-        <option key={role} value={role}>
-          {role}
-        </option>
-      );
-    });
-
-    // Add F2-369 employee IDs
-    for (let i = 1; i <= 300; i++) {
-      const employeeId = `F2-369-${String(i).padStart(3, '0')}`;
-      options.push(
-        <option key={employeeId} value={employeeId}>
-          {employeeId}
-        </option>
-      );
-    }
-      
-    // Add F3-369 sourcer employee IDs
-    for (let i = 1; i <= 20; i++) {
-      const employeeId = `F3-369-${String(i).padStart(3, '0')}`;
-      options.push(
-        <option key={employeeId} value={employeeId}>
-          {employeeId}
-        </option>
-      );
-    }
-    
-    // Add int-369 employee IDs
-    for (let i = 1; i <= 100; i++) {
-      const employeeId = `INT-369-${String(i).padStart(3, '0')}`;
-      options.push(
-        <option key={employeeId} value={employeeId}>
-          {employeeId}
-        </option>
-      );
-    }
-    
-    return options;
+  const handleManagerLogin = () => {
+    navigate('/mngfetch'); // Navigate to /mngfetch URL
   };
 
   return (
     <div className='track-rec'>
       {!loggedInUser ? (
         <div className='login-form'>
-          <h1>Login</h1>
-          <form onSubmit={handleSubmit}>
+          <h1>User Login</h1>
+          <form onSubmit={handleUserLogin}>
             <select
               value={employeeIdOfCaseOwner}
               onChange={handleEmployeeIdChange}
@@ -117,22 +66,27 @@ function Record() {
             <input
               type="password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={userPassword}
+              onChange={(e) => setUserPassword(e.target.value)}
             />
             <button type="submit">Login</button>
+            <button className='mng-button' onClick={handleManagerLogin}>If you are Manager ? Click Here</button> {/* Button for manager login */}
           </form>
+          
+          
+
           {error && <p className='record-err'>{error}</p>}
         </div>
       ) : (
         <div className='track-data'>
-          <h1>Tracked Records</h1>
+          <h1>TRACK BY: { employeeIdOfCaseOwner }</h1>
           <table>
             <thead>
-             <tr>
+              <tr>
                 <th>SNO</th>
                 <th>Customer Name</th>
                 <th>Employee Name</th>
+                <th>Manager Name</th>
                 <th>POC Name</th>
                 <th>Login Date</th>
                 <th>Login By</th>
@@ -148,6 +102,7 @@ function Record() {
                   <td>{index + 1}</td>
                   <td>{record.customerName}</td>
                   <td>{record.employeeName}</td>
+                  <td>{record.managerName}</td>
                   <td>{record.pocName}</td>
                   <td>{record.loginDate}</td>
                   <td>{record.loginDoneBy}</td>
@@ -180,6 +135,55 @@ function getClassForStatus(caseStatus) {
     default:
       return '';
   }
+}
+
+function generateEmployeeIdOptions() {
+  const options = [];
+  
+  // Add roles (CHANNEL PARTNER, SOURCER, INTERN)
+  const roles = ['CHANNEL PARTNER', 'SOURCER', 'INTERN'];
+  roles.forEach(role => {
+    options.push(
+      <option key={role} value={role}>
+        {role}
+      </option>
+    );
+  });
+  
+  // Regular Employees (F2-369)
+  options.push(<option key="regular" disabled className="regular">Regular Employees</option>);
+  for (let i = 1; i <= 300; i++) {
+    const employeeId = `F2-369-${String(i).padStart(3, '0')}`;
+    options.push(
+      <option key={employeeId} value={employeeId} className="regular-option">
+        {employeeId}
+      </option>
+    );
+  }
+  
+  // Sourcer IDs (F3-369)
+  options.push(<option key="sourcer" disabled className="sourcer">Sourcer IDs</option>);
+  for (let i = 1; i <= 20; i++) {
+    const employeeId = `F3-369-${String(i).padStart(3, '0')}`;
+    options.push(
+      <option key={employeeId} value={employeeId} className="sourcer-option">
+        {employeeId}
+      </option>
+    );
+  }
+  
+  // Intern IDs (INT-369)
+  options.push(<option key="intern" disabled className="intern">Intern IDs</option>);
+  for (let i = 1; i <= 100; i++) {
+    const employeeId = `INT-369-${String(i).padStart(3, '0')}`;
+    options.push(
+      <option key={employeeId} value={employeeId} className="intern-option">
+        {employeeId}
+      </option>
+    );
+  }
+  
+  return options;
 }
 
 export default Record;

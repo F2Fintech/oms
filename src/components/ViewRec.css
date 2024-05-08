@@ -46,3 +46,7 @@ th {
 .audio-player audio {
     width: 100%;
 }
+
+.show-audio {
+    margin-top: 70px;
+}

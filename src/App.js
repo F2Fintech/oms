@@ -21,6 +21,7 @@ import AdminPage from './components/AdminPage';
 import Record from './components/Record';
 import CheckCibil from './components/CheckCibil';
 import NotFoundPage from './components/NotFoundPage';
+import ManagerFetchRecord from './components/ManagerFetchRecord';
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
@@ -67,6 +68,7 @@ function App() {
       <Routes>
       <Route path="/404" element={<NotFoundPage />} />
         {/* <Route path="/check" element={<CheckCibil />} /> */}
+        <Route path="/mngfetch" element={<ManagerFetchRecord />} />
         <Route path="/record" element={<Record />} />
         <Route path="/rec" element={<RecordingUpload />} />
         <Route path="/tvrrec" element={<ViewRecording />} />

@@ -399,10 +399,7 @@ const handleDownloadAllData = async () => {
     if (!pocName) return resetFilters();
     
     const lowerCasePocName = pocName.toLowerCase();
-    applyFilters(item => {
-      const itemPocName = item.pocName ? item.pocName.toLowerCase() : ""; // Convert null or undefined to empty string
-      return itemPocName.includes(lowerCasePocName) || itemPocName === "";
-    }, true);
+    applyFilters(item => item.pocName.toLowerCase().includes(lowerCasePocName), true);
   };
   
   
@@ -517,7 +514,7 @@ const handleDownloadAllData = async () => {
                     </button>
                 </th>
                 <th>
-                  Employee ID of Case Owner
+                  Employee ID
                   <button onClick={() => handleFilterByEmpIdOfCaseOwner()}>
                       <FontAwesomeIcon icon={faFilter} />
                   </button>
@@ -537,7 +534,12 @@ const handleDownloadAllData = async () => {
    <FontAwesomeIcon icon={faFilter} />
   </button>
 </th>
-                
+<th>
+                  Customer Name
+              <button onClick={() => handleFilterByCustomerName()}>
+                <FontAwesomeIcon icon={faFilter} />
+              </button>
+      </th> 
       <th>Customer DOB</th>
       <th>Branch Name</th>
       <th>Customer Contact</th>
@@ -563,12 +565,7 @@ const handleDownloadAllData = async () => {
       <th>Latest CIBIL Score</th>
       <th>Banking Pass and Other Doc Pass</th>
 
-      <th>
-                  Customer Name
-              <button onClick={() => handleFilterByCustomerName()}>
-                <FontAwesomeIcon icon={faFilter} />
-              </button>
-      </th>
+      
                 <th>
                   Lender      
                   <button onClick={() => handleFilterByLender()}>
@@ -579,16 +576,16 @@ const handleDownloadAllData = async () => {
                 <th>UniqueNo</th>
                 <th>Documents</th>
                 
-                <th>Edit Sales Data</th>
+                {/* <th>Edit Sales Data</th> */}
       <th>
   POC Name
   {/* Filter icon */}
-  <button onClick={() => handleFilterByPocName()}>
+  {/* <button onClick={() => handleFilterByPocName()}>
    <FontAwesomeIcon icon={faFilter} />
-  </button>
+  </button> */}
                 </th>
                 <th>Ops Unique</th>
-                <th>Customer Pan</th>
+                {/* <th>Customer Pan</th> */}
                 <th>
                   Login Status
                  <button onClick={() => handleFilterByLoginSatus()}>
@@ -760,6 +757,18 @@ const handleDownloadAllData = async () => {
     )}
 </td>
 
+<td>
+    {/* Editable input field for customerName */}
+    {editedDataIndex === index ? (
+        <input
+            type="text"
+            value={editedData.customerName}
+            onChange={(e) => handleEditDataChange('customerName', e.target.value)}
+        />
+    ) : (
+        item.customerName
+    )}
+</td>
 <td>
     
     {editedDataIndex === index ? (
@@ -979,18 +988,7 @@ const handleDownloadAllData = async () => {
 </td>
 
 
-<td>
-    {/* Editable input field for customerName */}
-    {editedDataIndex === index ? (
-        <input
-            type="text"
-            value={editedData.customerName}
-            onChange={(e) => handleEditDataChange('customerName', e.target.value)}
-        />
-    ) : (
-        item.customerName
-    )}
-</td>
+
         
         <td>
         {editedDataIndex === index ? (
@@ -1016,7 +1014,7 @@ const handleDownloadAllData = async () => {
     )}
 </td>
 <td>
-        {/* {editedDataIndex === index ? (
+        {editedDataIndex === index ? (
         <input
             type="text"
             value={editedData.uniqueno}
@@ -1024,8 +1022,8 @@ const handleDownloadAllData = async () => {
         />
     ) : (
         item.uniqueno
-    )} */}
-    {item.uniqueno}
+    )}
+    {/* {item.uniqueno} */}
 </td>
             <td>
                 {item.files && item.files.length > 0 ? (
@@ -1036,13 +1034,13 @@ const handleDownloadAllData = async () => {
                     <span>No File Available</span>
                 )}
             </td>
-            <td>
+            {/* <td>
                 {editedDataIndex === index ? (
                     <button className='save-btn' onClick={() => handleSaveEditedData(index)}>Save</button>
                 ) : (
                     <button className='edit-btn' onClick={() => handleEditData(index)}>Edit</button>
                 )}
-            </td>
+            </td> */}
 
         {opsData[index] && (
                 <>
@@ -1071,14 +1069,15 @@ const handleDownloadAllData = async () => {
     <input
       type="text"
       value={editedOpsData.uniqueno}
-      onChange={(e) => handleEditChange('uniqueno', e.target.value)}
+      onChange={(e) => handleEditChange('uniqueno', e.target.value.replace(/\s/g, ''))}
+      // The /\s/g regular expression matches all whitespace characters (spaces, tabs, etc.)
     />
   ) : (
     opsData[index].uniqueno
   )}
 </td>
 
-  <td>
+  {/* <td>
                         {editIndex === index ? (
                         <input
                           type="text"
@@ -1088,7 +1087,7 @@ const handleDownloadAllData = async () => {
                         ) : (
                         opsData[index].customerPan
                         )}
-            </td>
+            </td> */}
             
 
             <td>
@@ -1455,6 +1454,7 @@ const handleDownloadAllData = async () => {
       <option value="DA">DA</option>
       <option value="DGO">DGO</option>
       <option value="BAMS">BAMS</option>
+      <option value="BHMS">BHMS</option>
       <option value="CA/CS/ICWA">CA/CS/ICWA</option>
     </select>
   ) : (

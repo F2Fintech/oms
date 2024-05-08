@@ -66,6 +66,7 @@ function UploadForm() {
 'F2-369-101': 'NEHA SINGH',
 'F2-369-173': 'ANSHIKA KHOLI',
 'F2-369-175': 'ROSHAN YADAV',
+'F2-369-186': 'ANURAG',
 'F2-369-188': 'JOLLY KUMARI',
 'F2-369-189': 'MUSKAN JAISWAL',
 'F2-369-190': 'ADITI SINGHAL',
@@ -143,24 +144,6 @@ function UploadForm() {
 'F2-369-230': 'DIVYANSH SINGHAL',
 'F2-369-231': 'HARSH BHARDWAJ',
 'F2-369-232': 'SURYA PRATAP',
-
-'INT-369-034': 'ANKITA KUNDU',
-'INT-369-021': 'AYESHKANTA MOHAPATRA',
-'INT-369-025': 'ANURAG NAYAK',
-'INT-369-026': 'AWNISH',
-'INT-369-039': 'ARYAMAN NAHAR',
-'INT-369-037': 'ABDUL AZHAR',
-'INT-369-024': 'JASHANPREET',
-'INT-369-029': 'KHUSHI BAJORIA',
-'INT-369-036': 'MANIK RANA',
-'INT-369-028': 'NAVROOP KAUR',
-'INT-369-032': 'PRANAV ACHARYA',
-'INT-369-023': 'RAHUL SAHA',
-'INT-369-022': 'SIDDARTH L',
-'INT-369-030': 'SIDDHI SINGH',
-'INT-369-038': 'SNEHAL',
-'INT-369-027': 'SANAD',
-'INT-369-035': 'VIKRANT CHOUDHARY',  
 // sourcer id
 'F3-369-003': 'SOURAV',
 'F3-369-004': 'MANAS',
@@ -178,7 +161,27 @@ function UploadForm() {
 'F3-369-016': 'SALONI',
 'F3-369-017': 'ABHISHEK',
 'F3-369-018': 'KAPIL',
-'F2369-019': 'PRIYA SHARMA'
+'F3-369-019': 'PRIYA SHARMA',
+'F3-369-021': 'RAJIV GUPTA',
+
+'INT-369-034': 'ANKITA KUNDU',
+'INT-369-021': 'AYESHKANTA MOHAPATRA',
+'INT-369-025': 'ANURAG NAYAK',
+'INT-369-026': 'AWNISH',
+'INT-369-039': 'ARYMAN NAHAR',
+'INT-369-037': 'ABDUL AZHAR',
+'INT-369-024': 'JASHANPREET',
+'INT-369-029': 'KHUSHI BAJORIA',
+'INT-369-036': 'MANIK RANA',
+'INT-369-028': 'NAVROOP KAUR',
+'INT-369-032': 'PRANAV ACHARYA',
+'INT-369-023': 'RAHUL SAHA',
+'INT-369-022': 'SIDDARTH L',
+'INT-369-030': 'SIDDHI SINGH',
+'INT-369-038': 'SNEHAL',
+'INT-369-027': 'SANAD',
+'INT-369-035': 'VIKRANT CHOUDHARY',  
+
 
     };
 
@@ -419,9 +422,9 @@ const handleLenderChange2 = (event) => {
   }
   };
   // Generate employeeIdOfCaseOwner values from F2-369-001 to F2-369-400
-  const employeeIds = Array.from({ length: 400 }, (_, index) => `F2-369-${String(index + 1).padStart(3, '0')}`);
+  const employeeIds = Array.from({ length: 300 }, (_, index) => `F2-369-${String(index + 1).padStart(3, '0')}`);
 
-  const additionalIds = [
+  const internIds = [
     'INT-369-001', 'INT-369-002', 'INT-369-003', 'INT-369-004', 'INT-369-005',
 'INT-369-006', 'INT-369-007', 'INT-369-008', 'INT-369-009', 'INT-369-010',
 'INT-369-011', 'INT-369-012', 'INT-369-013', 'INT-369-014', 'INT-369-015',
@@ -441,7 +444,12 @@ const handleLenderChange2 = (event) => {
 'F3-369-013', 'F3-369-014', 'F3-369-015', 'F3-369-016', 'F3-369-017',
 'F3-369-018', 'F3-369-019',
   ]
-  const allEmployeeIds = [...employeeIds, ...sourcerId, ...additionalIds];
+  const allEmployeeIds = [
+  { category: 'Sourcer', ids: sourcerId },
+    { category: 'Regular Employee', ids: employeeIds },
+    
+    { category: 'Intern', ids: internIds }
+  ];
 
   return (
     <>
@@ -465,26 +473,38 @@ const handleLenderChange2 = (event) => {
         </label>
       </div>
 
-          <div className="form-group">
-            <label>
-              Employee ID of Case Owner:
-              <select
-                name="employeeIdOfCaseOwner"
-                value={formData.employeeIdOfCaseOwner}
-                onChange={handleInputChange}
-                >
+      <div className="form-group">
+      <label>
+                Employee ID of Case Owner:
+                
+        <select
+          name="employeeIdOfCaseOwner"
+          value={formData.employeeIdOfCaseOwner}
+          onChange={handleInputChange}
+        >
                   <option value="">Choose Employee ID</option>
-                <option value="CUSTOMER">CUSTOMER</option>
-                <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
-                <option value="INTERN">INTERN</option>
-                  <option value="SOURCER">SOURCER</option>
-                {allEmployeeIds.map((id) => (
-                  <option key={id} value={id}>{id}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-
+                  <optgroup label="Other">
+            {/* <option value="CUSTOMER">CUSTOMER</option> */}
+            <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
+            {/* <option value="INTERN">INTERN</option>
+            <option value="SOURCER">SOURCER</option> */}
+          </optgroup>
+          {allEmployeeIds.map(({ category, ids }) => (
+            <optgroup key={category} label={category}>
+              {ids.map((id) => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </optgroup>
+          ))}
+          
+        </select>
+      </label>
+      {/* <div>
+        {formData.employeeName && (
+          <p>Selected Employee Name: {formData.employeeName}</p>
+        )}
+      </div> */}
+    </div>
           <div className="form-group">
   <label>
     Employee Name:
@@ -526,6 +546,7 @@ const handleLenderChange2 = (event) => {
           <option value="ABHINAV AWAL">ABHINAV AWAL</option>
           <option value="DEEPANSHU">DEEPANSHU</option>
           <option value="F2-FINTECH">F2-FINTECH</option>
+          <option value="GROWTH MANAGER">GROWTH MANAGER</option>
           <option value="HARPREET SINGH">HARPREET SINGH</option>
           <option value="JIYA">JIYA</option>
           <option value="NEHA LAKRA">NEHA LAKRA</option>
@@ -536,7 +557,7 @@ const handleLenderChange2 = (event) => {
           <option value="SHASHANK SHARMA">SHASHANK SHARMA</option>
           <option value="SHIVANI">SHIVANI</option>
           <option value="SHUBHAM">SHUBHAM</option>
-          <option value="TARUN DHIMAN">TARUN DHIMAN</option>
+          {/* <option value="TARUN DHIMAN">TARUN DHIMAN</option> */}
 
               {/* Add more options as needed */}
             </select>

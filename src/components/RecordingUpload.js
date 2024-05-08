@@ -17,6 +17,9 @@ function UploadRecordingForm() {
         // 'F2-369-002': 'MUSKAN',
         'F2-369-189': 'MUSKAN',
         'F2-369-190': 'ADITI',
+        'F2-369-008': 'MANOJ KUMAR',
+        'F2-369-019': 'FURKAN',
+        'F2-369-149': 'NISHA',
 
         // Add more mappings as needed
     };

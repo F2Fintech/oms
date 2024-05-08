@@ -33,6 +33,7 @@ function ViewOpsRec() {
 
     return (
         <div>
+            <div className='show-audio'></div>
             <h1>Data With OPS Recording</h1>
             <table>
                 <thead>
