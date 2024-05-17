@@ -49,9 +49,10 @@
 }
 
 .nav-links li a:hover {
-    background-color: #aa2e25;
+    /* background-color: #aa2e25; */
     padding: 5PX 8px;
     border: none;
+    text-decoration: underline;
     
 }
 

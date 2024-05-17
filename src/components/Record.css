@@ -167,3 +167,29 @@
     background-color: #272b2a;
     width: 100%;
 }
+
+.back-btn {
+   
+    margin-top: 5px;
+    border: none;
+    background-color: #00695f;
+  color: white;
+  text-align: center;
+  justify-content: center;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 7px;
+  margin-left: 780px;
+}
+
+.back-btn:hover {
+    background-color: #009688;
+  color: white;
+  text-align: center;
+  justify-content: center;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}

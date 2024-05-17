@@ -22,6 +22,8 @@ import Record from './components/Record';
 import CheckCibil from './components/CheckCibil';
 import NotFoundPage from './components/NotFoundPage';
 import ManagerFetchRecord from './components/ManagerFetchRecord';
+import NewDataviewerPage from './components/NewDataviewerPage';
+import ExistsUserFormOrNot from './components/ExistsUserFormOrNot';
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
@@ -68,11 +70,13 @@ function App() {
       <Routes>
       <Route path="/404" element={<NotFoundPage />} />
         {/* <Route path="/check" element={<CheckCibil />} /> */}
+        <Route path ="/formexistsornot" element={<ExistsUserFormOrNot/>}/>
+        <Route path="/olddataview" element={<DataViewer />} />
         <Route path="/mngfetch" element={<ManagerFetchRecord />} />
         <Route path="/record" element={<Record />} />
         <Route path="/rec" element={<RecordingUpload />} />
         <Route path="/tvrrec" element={<ViewRecording />} />
-        <Route path="/opsrec" element={<ViewOpsRec />} />
+        {/* <Route path="/opsrec" element={<ViewOpsRec />} /> */}
         <Route path="/salesrec" element={<SalesRecView />} />
         <Route path="/f2-admin" element={<AdminPage />} />
         <Route path="/nisha" element={<NishaPage />} />
@@ -89,7 +93,7 @@ function App() {
           path="/salesview"
           element={
             <ProtectedRoute>
-              <DataViewer onLogout={logout} />
+              <NewDataviewerPage onLogout={logout} />
             </ProtectedRoute>
           }
         />

@@ -324,8 +324,8 @@ td {
 
 .emp-data {
   color: black;
-  padding: 30px;
-  font-size: 40px;
+  /* padding: 30px; */
+  font-size: 30px;
   text-align: center;
 
 }
@@ -339,7 +339,7 @@ td {
   /* Positions items on the main axis */
   align-items: center;
   /* Aligns items vertically */
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   /* Optional: adds some space below the header */
   margin-top: 60px;
 
@@ -443,7 +443,7 @@ td {
   /* Hide any content that overflows the cell */
   text-overflow: ellipsis;
   /* Show an ellipsis (...) when content overflows */
-   font-size: 14px;
+   font-size: 16px;
     font-weight: 300;
 }
 
@@ -586,4 +586,48 @@ td {
 .purple-row {
   background-color: purple;
   /* Purple */
+}
+
+.blue-row {
+  background-color: #00a9be;
+}
+
+.for-filter select {
+  width: 70px;
+  padding: 4px;
+  margin-right: 4px;
+  border: 2px solid;
+  border-radius: 5PX;
+}
+
+.for-filter label {
+ color: #00695f;
+ font-size: large;
+ font-weight: 600;
+
+}
+
+.for-filter option {
+  font-size: larger;
+}
+
+.fas, .fa-solid {
+  font-weight: 900;
+  font-size: x-large;
+}
+
+.for-filter button {
+  padding: 9px;
+  border-radius: 50px;
+  border: none;
+  background-color: rgb(66, 66, 66);
+  color: white;
+}
+
+.for-filter button:hover {
+  padding: 9px;
+  border-radius: 50px;
+  border: none;
+  background-color:#0b3657;
+  color: white;
 }

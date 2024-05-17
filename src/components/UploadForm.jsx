@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import axios from 'axios';
 import './UploadForm.css';
 
@@ -9,6 +10,7 @@ function UploadForm() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const [formData, setFormData] = useState({
     dateOfLogin: '',
@@ -144,6 +146,7 @@ function UploadForm() {
 'F2-369-230': 'DIVYANSH SINGHAL',
 'F2-369-231': 'HARSH BHARDWAJ',
 'F2-369-232': 'SURYA PRATAP',
+'F2-369-234': 'SAMIRUDDIN KHAN',
 // sourcer id
 'F3-369-003': 'SOURAV',
 'F3-369-004': 'MANAS',
@@ -162,6 +165,7 @@ function UploadForm() {
 'F3-369-017': 'ABHISHEK',
 'F3-369-018': 'KAPIL',
 'F3-369-019': 'PRIYA SHARMA',
+'F3-369-020': 'JITENDRA KUMAR',
 'F3-369-021': 'RAJIV GUPTA',
 
 'INT-369-034': 'ANKITA KUNDU',
@@ -180,9 +184,7 @@ function UploadForm() {
 'INT-369-030': 'SIDDHI SINGH',
 'INT-369-038': 'SNEHAL',
 'INT-369-027': 'SANAD',
-'INT-369-035': 'VIKRANT CHOUDHARY',  
-
-
+'INT-369-035': 'VIKRANT CHOUDHARY',
     };
 
      if (name === 'employeeIdOfCaseOwner') {
@@ -312,6 +314,7 @@ const handleLenderChange2 = (event) => {
   ];
   
   const lenderOptions2 = [
+    'IDFC',
     'KOTAK MAHINDRA BANK',
      'L&T',
      'LENDING KART',
@@ -442,7 +445,7 @@ const handleLenderChange2 = (event) => {
     'F3-369-003', 'F3-369-004', 'F3-369-005', 'F3-369-006', 'F3-369-007', 
 'F3-369-008', 'F3-369-009', 'F3-369-010', 'F3-369-011', 'F3-369-012',
 'F3-369-013', 'F3-369-014', 'F3-369-015', 'F3-369-016', 'F3-369-017',
-'F3-369-018', 'F3-369-019',
+'F3-369-018', 'F3-369-019','F3-369-020','F3-369-021'
   ]
   const allEmployeeIds = [
   { category: 'Sourcer', ids: sourcerId },
@@ -451,10 +454,15 @@ const handleLenderChange2 = (event) => {
     { category: 'Intern', ids: internIds }
   ];
 
+  const handleFormExistsOrNot = () => {
+    navigate('/formexistsornot'); // Navigate to /mngfetch URL
+  };
+
   return (
     <>
       <div className="form-container">
       <h1 className="form-title">Case Login Form</h1>
+      <button className='existformornot-button' onClick={handleFormExistsOrNot}>Do you want to check form is submitted or not??</button> {/* Button for manager login */}
       <form className="loanApplicationForm">
      
       <div className="column">
@@ -533,6 +541,7 @@ const handleLenderChange2 = (event) => {
       <option value="SOURCER">SOURCER</option>
       <option value="CHANNEL PARTNER">CHANNEL PARTNER</option>
       <option value="CUSTOMER">CUSTOMER</option>
+      <option value="INTERN">INTERN</option>
     </select>
   </label>
 </div>

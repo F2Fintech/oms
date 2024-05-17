@@ -485,7 +485,7 @@ const handleDownloadAllData = async () => {
 
         
         
-      <div className="nav-bar">
+      {/* <div className="nav-bar">
                     <button onClick={() => navigate('/nisha')}>Nisha Page</button>
                     <button onClick={() => navigate('/furkan')}>Furkan Page</button>
                     <button onClick={() => navigate('/anit')}>Anit Page</button>
@@ -494,8 +494,8 @@ const handleDownloadAllData = async () => {
                     <button onClick={() => navigate('/manoj')}>Manoj Page</button>
                     <button onClick={() => navigate('/anurandhan')}>Anurandhan Page</button>
 
-                    {/* Add other navigation buttons as needed */}
-                </div>
+
+                </div> */}
       
                 <h2 className="emp-data">Employee Data</h2>
 
@@ -576,7 +576,7 @@ const handleDownloadAllData = async () => {
                 <th>UniqueNo</th>
                 <th>Documents</th>
                 
-                {/* <th>Edit Sales Data</th> */}
+                <th>Edit Sales Data</th>
       <th>
   POC Name
   {/* Filter icon */}
@@ -1034,13 +1034,13 @@ const handleDownloadAllData = async () => {
                     <span>No File Available</span>
                 )}
             </td>
-            {/* <td>
+            <td>
                 {editedDataIndex === index ? (
                     <button className='save-btn' onClick={() => handleSaveEditedData(index)}>Save</button>
                 ) : (
                     <button className='edit-btn' onClick={() => handleEditData(index)}>Edit</button>
                 )}
-            </td> */}
+            </td>
 
         {opsData[index] && (
                 <>
