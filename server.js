@@ -367,14 +367,14 @@ const dataSchema = new mongoose.Schema({
     employeeName: String,
     dateOfBirth: {
         type: String, // Store as a string
-        set: (v) => {
-            // Convert to 'DD-MM-YYYY' format
-            const date = new Date(v);
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
-        }
+        // set: (v) => {
+        //     // Convert to 'DD-MM-YYYY' format
+        //     const date = new Date(v);
+        //     const day = date.getDate().toString().padStart(2, '0');
+        //     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+        //     const year = date.getFullYear();
+        //     return `${day}-${month}-${year}`;
+        // }
     },
     managerName: String,
     employementType: String,
@@ -424,7 +424,9 @@ const opsTeamSchema = new mongoose.Schema({
   eligibilityCheckBy: String,
   loginStatus: String,
   loginDoneBy: String,
-  loginDate: String,
+  loginDate: {
+    type: String, // Store as a string
+},
   leadId: String,
   caseStatus: String,
   kfs: String,
@@ -542,12 +544,11 @@ dataSchema.pre('save', function(next) {
 });
 
 // for ops form 
-opsTeamSchema.pre('save', function(next) {
-  const now = new Date();
-  this.loginDate = formatDate(now);
- 
-  next();
-});
+// opsTeamSchema.pre('save', function(next) {
+//   const now = new Date();
+//   this.loginDate = formatDate(now);
+//   next();
+// });
 
 
 
@@ -856,6 +857,64 @@ const opData = new OpsData({
     res.status(201).json({ message: 'Ops Team data uploaded successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Error uploading Ops Team data' });
+  }
+});
+
+// current combined data 
+app.get('/combined-data', async (req, res) => {
+  try {
+    // Fetch data from DataModel
+    const data = await Data.find();
+
+    // Fetch data from OpsDataModel
+    const opsData = await OpsData.find();
+
+    // Combine data based on matching unique numbers
+    const combinedData = data.map(dataItem => {
+      const matchingOpsData = opsData.find(opsItem => opsItem.uniqueno === dataItem.uniqueno);
+      return { data: dataItem, opsData: matchingOpsData || {} }; // Use an empty object if no matching opsData found
+    });
+
+    res.json(combinedData);
+  } catch (error) {
+    console.error('Error fetching combined data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update current Data and OpsData
+app.post('/updatedataandopsdata', async (req, res) => {
+  try {
+    const { data: updatedData, opsData: updatedOpsData } = req.body;
+
+    // Update OpsData
+    await OpsData.findByIdAndUpdate(updatedOpsData._id, updatedOpsData);
+
+    // Update Data
+    await Data.findByIdAndUpdate(updatedData._id, updatedData);
+
+    res.status(200).json({ message: 'Data and OpsData updated successfully' });
+  } catch (error) {
+    console.error('Error updating data and opsData:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// current month delete combine data
+app.delete('/combinedData/:uniqueno', async (req, res) => {
+  try {
+    const uniqueno = req.params.uniqueno;
+
+    // Delete the Data entry
+    await Data.deleteOne({ uniqueno });
+
+    // Delete the corresponding OpsData entry
+    await OpsData.deleteOne({ uniqueno });
+
+    res.sendStatus(204); // Successful deletion
+  } catch (error) {
+    console.error('Error deleting combinedData:', error);
+    res.status(500).send('Error deleting combinedData');
   }
 });
 
@@ -1419,6 +1478,19 @@ const authenticateUser = (req, res, next) => {
 // API endpoint for user login
 app.post('/api/login', authenticateUser, (req, res) => {
   res.json({ message: 'Login successful' });
+});
+
+// Endpoint to fetch data from Data model
+app.get('/api/existsformornot/:employeeIdOfCaseOwner', async (req, res) => {
+  const { employeeIdOfCaseOwner } = req.params;
+  try {
+    // Fetch records from Data model based on employeeId
+    const existsFormOrNot = await Data.find({ employeeIdOfCaseOwner });
+    res.status(200).json(existsFormOrNot);
+  } catch (error) {
+    console.error('Error fetching existsFormOrNot:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 
