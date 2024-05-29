@@ -96,6 +96,7 @@ function UploadForm() {
 'F2-369-025': 'KRISHNA THAKUR',
 'F2-369-026': 'NEHA LAKRA',
 'F2-369-045': 'HIMANSHI SINGH',
+'F2-369-046': 'DEEPANSHU',
 'F2-369-056': 'TARUN DHEEMAN',
 'F2-369-077': 'SHUBHAM PAHTAK',
 'F2-369-079': 'ANURANDHAN KUMAR',
@@ -139,7 +140,6 @@ function UploadForm() {
 'F2-369-220': 'ROHIT CHAUHAN',
 'F2-369-222': 'IRAM KHAN',
 'F2-369-223': 'MANSIKASHYAP',
-
 'F2-369-228': 'AKSHIT VIJAY WARGIYA',
 'F2-369-233': 'DISHA',
 'F2-369-229': 'DAKSH SINGH',
@@ -147,6 +147,12 @@ function UploadForm() {
 'F2-369-231': 'HARSH BHARDWAJ',
 'F2-369-232': 'SURYA PRATAP',
 'F2-369-234': 'SAMIRUDDIN KHAN',
+'F2-369-235': 'ANKIT KUMAR',
+'F2-369-238': 'HARSH',
+'F2-369-243': 'VISHAL',
+'F2-369-244': 'AKASH SINGHAL',
+'F2-369-245': 'GULFAM',
+'F2-369-251': 'ANJALI SINGH',
 // sourcer id
 'F3-369-003': 'SOURAV',
 'F3-369-004': 'MANAS',
@@ -298,11 +304,10 @@ const handleLenderChange2 = (event) => {
     'BAJAJ SALPL',
     'CHOLA MANDALAM',
     'FEDERAL BANK',
-    
+    'FINNABLE',
   ];
   
   const lenderOptions1 = [
-    'FINNABLE',
     'FULLERTON',
      'GODREJ',
      'HDFC',
@@ -311,10 +316,13 @@ const handleLenderChange2 = (event) => {
      'ICICI EDUCATION LOAN',
      'INCRED',
      'INDUSIND',
+     'INDIFY',
+     'IDFC',
   ];
   
   const lenderOptions2 = [
-    'IDFC',
+
+    'INDIAN BANK',
     'KOTAK MAHINDRA BANK',
      'L&T',
      'LENDING KART',
@@ -566,6 +574,8 @@ const handleLenderChange2 = (event) => {
           <option value="SHASHANK SHARMA">SHASHANK SHARMA</option>
           <option value="SHIVANI">SHIVANI</option>
           <option value="SHUBHAM">SHUBHAM</option>
+          <option value="SURAJ">SURAJ</option>
+          <option value="VINEET TIWARI">VINEET TIWARI</option>
           {/* <option value="TARUN DHIMAN">TARUN DHIMAN</option> */}
 
               {/* Add more options as needed */}
@@ -812,6 +822,7 @@ const handleLenderChange2 = (event) => {
                 <option value="EDUCATIONAL LOAN">EDUCATIONAL LOAN</option>
                 <option value="EQUIPMENT LOAN/MACHINERY LOAN">EQUIPMENT LOAN/MACHINERY LOAN</option>
                     <option value="PERSONAL LOAN">PERSONAL LOAN</option>
+                    <option value="BUISNESS LOAN">BUISNESS LOAN</option>
                 <option value="PROFESSIONAL LOAN">PROFESSIONAL LOAN (Doctor/CA/CS,CWA)</option>
               </optgroup>
               <optgroup label="Secured Loans">

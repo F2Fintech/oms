@@ -608,7 +608,7 @@ function NewDataviewerPage({ onLogout }) {
                                         <td>{combinedItem.data.dateOfLogin}</td>
 
                                         <td>{combinedItem.data.employeeIdOfCaseOwner}</td>
-                                        <td>
+                                        {/* <td>
                                             {editIndexData === index ? (
                                                 <input
                                                     type="text"
@@ -618,8 +618,10 @@ function NewDataviewerPage({ onLogout }) {
                                             ) : (
                                                 combinedItem.data.employeeName
                                             )}
-                                        </td>
-                                        <td>
+                                        </td> */}
+
+                                       <td>{combinedItem.data.employeeName}</td>
+                                        {/* <td>
                                             {editIndexData === index ? (
                                                 <input
                                                     type="date"
@@ -629,10 +631,22 @@ function NewDataviewerPage({ onLogout }) {
                                             ) : (
                                                 combinedItem.data.dateOfBirth
                                             )}
-                                        </td>
+                                        </td> */}
+                                        <td>{combinedItem.data.dateOfBirth}</td>
                                         <td>{combinedItem.data.employementType}</td>
                                         <td>{combinedItem.data.managerName}</td>
-                                        <td>{combinedItem.data.customerName}</td>
+                                        {/* <td>{combinedItem.data.customerName}</td> */}
+                                         <td>
+                                            {editIndexData === index ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedData.customerName}
+                                                    onChange={(e) => handleEditDataChange('customerName', e.target.value.toUpperCase())}
+                                                />
+                                            ) : (
+                                                combinedItem.data.customerName
+                                            )}
+                                        </td>
                                         <td>{combinedItem.data.branchName}</td>
 
                                         <td>{combinedItem.data.customerContact}</td>
@@ -1035,6 +1049,7 @@ function NewDataviewerPage({ onLogout }) {
                                                     <option value="B.COM">B.COM</option>
                                                     <option value="M.COM">M.COM</option>
                                                     <option value="BA">BA</option>
+                                                    <option value="BDS">BDS</option>
 
                                                 </select>
                                             ) : (

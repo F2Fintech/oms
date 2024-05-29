@@ -33,7 +33,7 @@ function App() {
   const setToken = (token) => {
     setAuthToken(token);
     localStorage.setItem('token', token);
-    navigate('/salesview'); // Navigate to DataViewer after setting the token
+    navigate('/f2Ie9fe9030fdj0fdkj9'); // Navigate to DataViewer after setting the token
   };
 
   // logout functionality
@@ -90,7 +90,7 @@ function App() {
         <Route path="/opsForm" element={<OpsForm />} />
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route
-          path="/salesview"
+          path="/f2Ie9fe9030fdj0fdkj9"
           element={
             <ProtectedRoute>
               <NewDataviewerPage onLogout={logout} />
